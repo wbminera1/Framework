@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="common">
+      <UniqueIdentifier>{edefcfa5-bc5b-4d1b-bfb2-004a15ab9d08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thread">
+      <UniqueIdentifier>{f5cd5aa7-2272-431e-a2ce-b744a1e02a19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sockets">
+      <UniqueIdentifier>{e9428658-16f1-4292-b872-bbe0ba56aae9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rpc">
+      <UniqueIdentifier>{ea14a6b3-d58a-4ca6-aacd-c86c1c3e9c11}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="common\Log.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="rpc\Command.cpp">
+      <Filter>rpc</Filter>
+    </ClCompile>
+    <ClCompile Include="rpc\CommandEnums.cpp">
+      <Filter>rpc</Filter>
+    </ClCompile>
+    <ClCompile Include="rpc\SocketClient.cpp">
+      <Filter>rpc</Filter>
+    </ClCompile>
+    <ClCompile Include="rpc\SocketServer.cpp">
+      <Filter>rpc</Filter>
+    </ClCompile>
+    <ClCompile Include="sockets\Socket.cpp">
+      <Filter>sockets</Filter>
+    </ClCompile>
+    <ClCompile Include="sockets\SocketAddress.cpp">
+      <Filter>sockets</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\Condition.cpp">
+      <Filter>thread</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\Misc.cpp">
+      <Filter>thread</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\Mutex.cpp">
+      <Filter>thread</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\TaskQueue.cpp">
+      <Filter>thread</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\Thread.cpp">
+      <Filter>thread</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\ThreadPool.cpp">
+      <Filter>thread</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="common\Log.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\Statics.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="rpc\Command.h">
+      <Filter>rpc</Filter>
+    </ClInclude>
+    <ClInclude Include="rpc\CommandEnums.h">
+      <Filter>rpc</Filter>
+    </ClInclude>
+    <ClInclude Include="rpc\SocketClient.h">
+      <Filter>rpc</Filter>
+    </ClInclude>
+    <ClInclude Include="rpc\SocketServer.h">
+      <Filter>rpc</Filter>
+    </ClInclude>
+    <ClInclude Include="sockets\Socket.h">
+      <Filter>sockets</Filter>
+    </ClInclude>
+    <ClInclude Include="sockets\SocketAddress.h">
+      <Filter>sockets</Filter>
+    </ClInclude>
+    <ClInclude Include="thread\Condition.h">
+      <Filter>thread</Filter>
+    </ClInclude>
+    <ClInclude Include="thread\Misc.h">
+      <Filter>thread</Filter>
+    </ClInclude>
+    <ClInclude Include="thread\Mutex.h">
+      <Filter>thread</Filter>
+    </ClInclude>
+    <ClInclude Include="thread\TaskQueue.h">
+      <Filter>thread</Filter>
+    </ClInclude>
+    <ClInclude Include="thread\Thread.h">
+      <Filter>thread</Filter>
+    </ClInclude>
+    <ClInclude Include="thread\ThreadPool.h">
+      <Filter>thread</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
