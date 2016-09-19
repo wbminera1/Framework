@@ -118,12 +118,12 @@ namespace sockets
 			const int flags = 0;
 			auto bytes_received = recv(m_Socket, &data[0], (int)data.capacity(), flags);
 			if (bytes_received > 0) {
-				Log(LOG_INFO, "SocketServer - received %d\n", bytes_received);
+				Log(LOG_INFO, "RecV - received %d\n", bytes_received);
 				data.resize(bytes_received);
 			} else if (bytes_received == 0) {
-				Log(LOG_INFO, "SocketServer - host shutdown.\n");
+				Log(LOG_INFO, "RecV - host shutdown.\n");
 			} else  { // (bytes_received < 0)
-				Log(LOG_ERR, "SocketServer - receive error: %d\n", bytes_received);
+				Log(LOG_ERR, "RecV - receive error: %d\n", bytes_received);
 			}
 			return bytes_received != 0;
 		}
@@ -133,13 +133,13 @@ namespace sockets
 			const int flags = 0;
 			auto bytes_sent = send(m_Socket, &data[0], (int)data.size(), flags);
 			if (bytes_sent > 0) {
-				Log(LOG_INFO, "SocketServer - sent %d\n", bytes_sent);
+				Log(LOG_INFO, "Send - sent %d\n", bytes_sent);
 			}
 			else if (bytes_sent == 0) {
-				Log(LOG_INFO, "SocketServer - host shutdown.\n");
+				Log(LOG_INFO, "Send - host shutdown.\n");
 			}
 			else { // (bytes_received < 0)
-				Log(LOG_ERR, "SocketServer - receive error: %d\n", WSAGetLastError());
+				Log(LOG_ERR, "Send - receive error: %d\n", WSAGetLastError());
 			}
 			return bytes_sent;
 		}

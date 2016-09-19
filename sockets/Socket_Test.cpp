@@ -3,7 +3,6 @@
 #include "../common/Log.h"
 
 
-//int main(_In_ int _Argc, _In_reads_(_Argc) _Pre_z_ char ** _Argv, _In_z_ char ** _Env)
 int Socket_Test()
 {
 	const char addStrSrc[] = "127.0.0.1";

@@ -1,17 +1,13 @@
-//#define _WINSOCK_DEPRECATED_NO_WARNINGS 
-//#include <errno.h>
 #include <string.h>
-//#include <ws2tcpip.h>
 
 #include "../sockets/Socket.h"
 
 #include "../common/Log.h"
 #include "SocketServer.h"
+#include "SocketClient.h"
 #include "Command.h"
-//#include <filesystem>
 
-const int MAX_CONNECTIONS = 1;
-//const char REQUEST_DELIMITER = '\n';
+const int MAX_CONNECTIONS = 16;
 
 SocketServer::SocketServer(int _port, CommandDispatcher* dispatcher)
   : Dispatched(dispatcher)
@@ -32,13 +28,17 @@ bool SocketServer::Start()
 	sockets::Socket serverS;
 
 	if (serverS.Open() && serverS.Bind(serverA)) {
+		Log(LOG_INFO, "SocketServer - listening\n");
 		if (serverS.Listen(MAX_CONNECTIONS)) {
 			requestMutex.Lock();
 			sockets::Socket connectedS;
 			sockets::SocketAddress connectedA(AF_INET);
 			if (connectedS.Accept(serverS, connectedA))
 			{
-				Log(LOG_INFO, "SocketServer - accepted :\n");
+				Log(LOG_INFO, "SocketServer - accepted\n");
+				SocketClient* sc = new SocketClient(connectedS, connectedA, NULL);
+				sc->Start();
+				Log(LOG_INFO, "SocketServer - client spawned\n");
 			}
 			requestMutex.Unlock();
 		}

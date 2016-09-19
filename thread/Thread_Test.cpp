@@ -96,7 +96,7 @@ void TestThreadPool()
 }
 
 
-int main(int argc, char** argv)
+int Thread_Test()
 {
 	//TestThread();
 	//TestMutex();

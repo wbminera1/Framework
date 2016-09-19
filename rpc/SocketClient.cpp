@@ -2,7 +2,7 @@
 #include "SocketClient.h"
 
 
-SocketClient::SocketClient(sockets::Socket&& sock, const sockets::SocketAddress& addr, CommandDispatcher* dispatcher)
+SocketClient::SocketClient(sockets::Socket& sock, const sockets::SocketAddress& addr, CommandDispatcher* dispatcher)
 	: SocketClient(addr, dispatcher)
 {
 	m_Socket = std::move(sock);
@@ -11,6 +11,8 @@ SocketClient::SocketClient(sockets::Socket&& sock, const sockets::SocketAddress&
 SocketClient::SocketClient(const sockets::SocketAddress& addr, CommandDispatcher* dispatcher)
 	: Dispatched(dispatcher)
 	, m_Addr(addr)
+	, m_RecThread(this)
+	, m_SendThread(this)
 {
 	m_CommandBuffer.reserve(1024);
 }
@@ -35,6 +37,7 @@ bool SocketClient::Send(const Command& cmd)
 
 bool SocketClient::Start()
 {
+	Log(LOG_INFO, __FUNCTION__ " started");
 	if (!m_Socket.IsValid()) {
 		m_Socket.Open();
 		m_Socket.Connect(m_Addr);
@@ -46,26 +49,14 @@ bool SocketClient::Start()
 
 	Log(LOG_INFO, "SocketClient - connected\n");
 
-	m_CommandWait.Lock();
-	while (!m_Stop)
-	{
-		m_CommandWait.Wait();
-		m_CommandMutex.Lock();
-		if (m_CommandBuffer.size() > 0)
-		{
-			auto res = m_Socket.Send(m_CommandBuffer);
-			if (res == SOCKET_ERROR) {
-				Log(LOG_ERR, "send function failed with error: %d\n", WSAGetLastError());
-				break;
-			}
-			m_CommandBuffer.clear();
-			Log(LOG_INFO, "sent %d bytes\n", res);
-		}
-		m_CommandMutex.Unlock();
-	}
-	m_CommandWait.Unlock();
+	m_RecThread.Create();
+	m_SendThread.Create();
+
+	m_RecThread.Join();
+	m_SendThread.Join();
 
 	m_Socket.Close();
+	Log(LOG_INFO, __FUNCTION__ " stopped");
 	return true;
 }
 
