@@ -38,26 +38,7 @@ private:
 		{
 			
 		}
-		virtual void Process() {  
-			if (m_Client->m_Socket.IsValid())
-			{
-				std::vector<char> data;
-				while (!m_Stop)
-				{
-					auto res = m_Client->m_Socket.RecV(data);
-					if (!res) {
-						Log(LOG_ERR, "RecThread - RecV function failed with error: %d\n", WSAGetLastError());
-						break;
-					}
-					Log(LOG_INFO, "RecThread - RecV %d bytes\n", data.size());
-				}
-			}
-			else
-			{
-				Log(LOG_ERR, "RecThread - invalid Socket");
-			}
-		}
-		
+		void Process();
 		SocketClient* m_Client;
 	};
 
@@ -69,30 +50,12 @@ private:
 		{
 
 		}
-		virtual void Process() {  
-			m_Client->m_CommandWait.Lock();
-			while (!m_Stop)
-			{
-				m_Client->m_CommandWait.Wait();
-				m_Client->m_CommandMutex.Lock();
-				if (m_Client->m_CommandBuffer.size() > 0)
-				{
-					auto res = m_Client->m_Socket.Send(m_Client->m_CommandBuffer);
-					if (res == SOCKET_ERROR) {
-						Log(LOG_ERR, "send function failed with error: %d\n", WSAGetLastError());
-						break;
-					}
-					m_Client->m_CommandBuffer.clear();
-					Log(LOG_INFO, "sent %d bytes\n", res);
-				}
-				m_Client->m_CommandMutex.Unlock();
-
-			}
-			m_Client->m_CommandWait.Unlock();
-		}
+		virtual void Process();
 
 		SocketClient* m_Client;
 	};
+
+	static const size_t MAX_COMMAND_SIZE = 1024;
 
 	sockets::Socket m_Socket;
 	sockets::SocketAddress m_Addr;

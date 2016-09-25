@@ -85,24 +85,24 @@ class Dispatched : public ICommandHandler
 {
 public:
 	Dispatched(CommandDispatcher* _dispatcher)
-		: dispatcher(_dispatcher)
+		: m_Dispatcher(_dispatcher)
 	{
-		if (dispatcher != nullptr)
+		if (m_Dispatcher != nullptr)
 		{
-			dispatcher->AddHandler(this);
+			m_Dispatcher->AddHandler(this);
 		}
 	}
 
 	virtual ~Dispatched()
 	{
-		if (dispatcher != nullptr)
+		if (m_Dispatcher != nullptr)
 		{
-			dispatcher->DelHandler(this);
+			m_Dispatcher->DelHandler(this);
 		}
 	}
 
 protected:
-	CommandDispatcher* dispatcher;
+	CommandDispatcher* m_Dispatcher;
 };
 
 class CommandSendBlocking : public ICommandHandler
@@ -118,7 +118,7 @@ class CommandSendBlocking : public ICommandHandler
 
 public:
 
-	Command*  response;
+	Command*  m_Response;
 
 	CommandSendBlocking();
 	virtual ~CommandSendBlocking() {}

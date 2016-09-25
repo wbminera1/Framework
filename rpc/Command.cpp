@@ -20,7 +20,7 @@ void Command::Deserialize(const std::vector<char>& commandBuffer)
 CommandSendBlocking::CommandSendBlocking()
   : received(false)
   , command(cError)
-  , response(nullptr)
+  , m_Response(nullptr)
 {
   //count_mutex .value = PTHREAD_MUTEX_INITIALIZER;
   //count_threshold_cv.value = PTHREAD_COND_INITIALIZER;
@@ -59,9 +59,9 @@ bool CommandSendBlocking::Handle(Command& cmd)
   if (cmd.command == cResponse)
   {
     pthread_mutex_lock(&count_mutex);
-    if (response != NULL)
+    if (m_Response != NULL)
     {
-      response->command = cmd.command;
+      m_Response->command = cmd.command;
     }
     received = true;
     pthread_cond_signal(&count_threshold_cv);

@@ -60,3 +60,56 @@ bool SocketClient::Start()
 	return true;
 }
 
+void SocketClient::RecThread::Process() {
+	if (m_Client->m_Socket.IsValid())
+	{
+		std::vector<char> data;
+		while (!m_Stop)
+		{
+			auto res = m_Client->m_Socket.RecV(data, MAX_COMMAND_SIZE);
+			if (!res) {
+				Log(LOG_ERR, "RecThread - RecV function failed with error: %d\n", WSAGetLastError());
+				break;
+			}
+			Log(LOG_INFO, "RecThread - RecV %d bytes\n", data.size());
+			uint32_t* dataSize = (uint32_t*)&data[0];
+			if (*dataSize > MAX_COMMAND_SIZE) {
+				Log(LOG_ERR, "RecThread - wrong data size: %d\n", *dataSize);
+				data.clear();
+				continue;
+			}
+			if (data.size() >= *dataSize) {
+				if (m_Client->m_Dispatcher != nullptr) {
+					//!!m_Client->m_Dispatcher->Dispatch();
+				}
+				data.erase(data.begin(), data.begin() + *dataSize);
+			}
+		}
+	}
+	else
+	{
+		Log(LOG_ERR, "RecThread - invalid Socket");
+	}
+}
+
+void SocketClient::SendThread::Process() {
+	m_Client->m_CommandWait.Lock();
+	while (!m_Stop)
+	{
+		m_Client->m_CommandWait.Wait();
+		m_Client->m_CommandMutex.Lock();
+		if (m_Client->m_CommandBuffer.size() > 0)
+		{
+			auto res = m_Client->m_Socket.Send(m_Client->m_CommandBuffer);
+			if (res == SOCKET_ERROR) {
+				Log(LOG_ERR, "send function failed with error: %d\n", WSAGetLastError());
+				break;
+			}
+			m_Client->m_CommandBuffer.clear();
+			Log(LOG_INFO, "sent %d bytes\n", res);
+		}
+		m_Client->m_CommandMutex.Unlock();
+
+	}
+	m_Client->m_CommandWait.Unlock();
+}

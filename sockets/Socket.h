@@ -113,19 +113,24 @@ namespace sockets
 
 		bool RecV(std::vector<char>& data, size_t dataSize = 1024)
 		{
-			data.clear();
-			data.resize(dataSize);
-			const int flags = 0;
-			auto bytes_received = recv(m_Socket, &data[0], (int)data.capacity(), flags);
-			if (bytes_received > 0) {
-				Log(LOG_INFO, "RecV - received %d\n", bytes_received);
-				data.resize(bytes_received);
-			} else if (bytes_received == 0) {
-				Log(LOG_INFO, "RecV - host shutdown.\n");
-			} else  { // (bytes_received < 0)
-				Log(LOG_ERR, "RecV - receive error: %d\n", bytes_received);
+			size_t currentSize = data.size();
+			if (currentSize < dataSize) {
+				data.resize(dataSize);
+				const int flags = 0;
+				auto bytes_received = recv(m_Socket, &data[currentSize], (int)(data.capacity() - currentSize), flags);
+				if (bytes_received > 0) {
+					Log(LOG_INFO, "RecV - received %d\n", bytes_received);
+					data.resize(bytes_received + currentSize);
+				}
+				else if (bytes_received == 0) {
+					Log(LOG_INFO, "RecV - host shutdown.\n");
+				}
+				else { // (bytes_received < 0)
+					Log(LOG_ERR, "RecV - receive error: %d\n", bytes_received);
+				}
+				return bytes_received != 0;
 			}
-			return bytes_received != 0;
+			return false;
 		}
 
 		int Send(const std::vector<char>& data)
