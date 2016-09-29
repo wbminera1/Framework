@@ -20,15 +20,17 @@
 
 BEGIN_ENUM(Command)
 {
-	DECL_ENUM(cFirst),           //!< cFirst
+	DECL_ENUM(cFirst),           
 	//
-	DECL_ENUM(cError),           //!< cError
-	DECL_ENUM(cResponse),        //!< cResponse,
-	DECL_ENUM(cPing),            //!< cPing
-	DECL_ENUM(cInfo),	  	 	 //!< cInfo
-	DECL_ENUM(cExit),            //!< cExit
+	DECL_ENUM(cError),           
+	DECL_ENUM(cResponse),        
+	DECL_ENUM(cConnect),
+	DECL_ENUM(cDisconnect),
+	DECL_ENUM(cExit),
+	DECL_ENUM(cJSONCommand),
+	DECL_ENUM(cBinaryCommand),
 	//
-	DECL_ENUM(cLast)             //!< cLast
+	DECL_ENUM(cLast)
 }
 END_ENUM(Command)
 

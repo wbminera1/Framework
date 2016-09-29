@@ -54,6 +54,12 @@
     <ClCompile Include="thread\ThreadPool.cpp">
       <Filter>thread</Filter>
     </ClCompile>
+    <ClCompile Include="rpc\CommandSendBlocking.cpp">
+      <Filter>rpc</Filter>
+    </ClCompile>
+    <ClCompile Include="rpc\CommandDispatcher.cpp">
+      <Filter>rpc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common\Log.h">
@@ -97,6 +103,12 @@
     </ClInclude>
     <ClInclude Include="thread\ThreadPool.h">
       <Filter>thread</Filter>
+    </ClInclude>
+    <ClInclude Include="rpc\CommandDispatcher.h">
+      <Filter>rpc</Filter>
+    </ClInclude>
+    <ClInclude Include="rpc\CommandSendBlocking.h">
+      <Filter>rpc</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

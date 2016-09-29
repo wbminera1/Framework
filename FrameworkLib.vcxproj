@@ -21,7 +21,9 @@
   <ItemGroup>
     <ClCompile Include="common\Log.cpp" />
     <ClCompile Include="rpc\Command.cpp" />
+    <ClCompile Include="rpc\CommandDispatcher.cpp" />
     <ClCompile Include="rpc\CommandEnums.cpp" />
+    <ClCompile Include="rpc\CommandSendBlocking.cpp" />
     <ClCompile Include="rpc\SocketClient.cpp" />
     <ClCompile Include="rpc\SocketServer.cpp" />
     <ClCompile Include="sockets\Socket.cpp" />
@@ -37,7 +39,9 @@
     <ClInclude Include="common\Log.h" />
     <ClInclude Include="common\Statics.h" />
     <ClInclude Include="rpc\Command.h" />
+    <ClInclude Include="rpc\CommandDispatcher.h" />
     <ClInclude Include="rpc\CommandEnums.h" />
+    <ClInclude Include="rpc\CommandSendBlocking.h" />
     <ClInclude Include="rpc\SocketClient.h" />
     <ClInclude Include="rpc\SocketServer.h" />
     <ClInclude Include="sockets\Socket.h" />

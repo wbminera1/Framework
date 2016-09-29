@@ -3,6 +3,7 @@
 #include "CommandEnums.h"
 #undef GENERATE_ENUM_STRINGS   // Stop string generation
 
+/*
 #include <stdio.h>
 
 void TestEnums()
@@ -10,3 +11,4 @@ void TestEnums()
   printf("%s\n", ToString(cError));
   printf("%s\n", ToString(sOk));
 }
+*/

@@ -29,14 +29,14 @@ bool SocketServer::Start()
 
 	if (serverS.Open() && serverS.Bind(serverA)) {
 		Log(LOG_INFO, "SocketServer - listening\n");
-		if (serverS.Listen(MAX_CONNECTIONS)) {
+		while (serverS.Listen(MAX_CONNECTIONS)) {
 			requestMutex.Lock();
 			sockets::Socket connectedS;
 			sockets::SocketAddress connectedA(AF_INET);
 			if (connectedS.Accept(serverS, connectedA))
 			{
 				Log(LOG_INFO, "SocketServer - accepted\n");
-				SocketClient* sc = new SocketClient(connectedS, connectedA, NULL);
+				SocketClient* sc = new SocketClient(connectedS, connectedA, m_Dispatcher);
 				sc->Start();
 				Log(LOG_INFO, "SocketServer - client spawned\n");
 			}

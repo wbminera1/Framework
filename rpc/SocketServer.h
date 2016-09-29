@@ -5,6 +5,7 @@
 #include "../thread/Mutex.h"
 
 #include "Command.h"
+#include "CommandDispatcher.h"
 
 class SocketServer : public Dispatched, public thread::Thread {
 public:

@@ -12,10 +12,10 @@
  */
 struct Command
 {
-	eCommand command;
+	eCommand m_Command;
 
-	Command() : command(cError) {}
-	explicit Command(eCommand _command) : command(_command) {}
+	Command() : m_Command(cError) {}
+	explicit Command(eCommand command) : m_Command(command) {}
 
 	void Serialize(std::vector<char>& commandBuffer) const;
 	void Deserialize(const std::vector<char>& commandBuffer);
@@ -27,103 +27,20 @@ struct Command
 		commandBuffer.insert(commandBuffer.end(), tmpBuffer.begin(), tmpBuffer.end());
 	}
 
+	template <typename T> void fromBuffer(const std::vector<char>& commandBuffer, size_t offset, T& field) const
+	{
+		field = *(T*)&commandBuffer[offset];
+	}
+
+	static const size_t MAX_COMMAND_SIZE = 1024;
+	
+	static Command* Create(std::vector<char>& data);
+	static Command* Create(eCommand command);
+
+	static void Destroy(Command*);
+
 	static void Test(void);
 
-};
-
-class ICommandHandler {
-public:
-	virtual ~ICommandHandler() {}
-	virtual bool Receive(Command& cmd) = 0;
-	virtual bool Send(const Command& cmd) = 0;
-};
-
-class CommandDispatcher
-{
-public:
-	CommandDispatcher()
-{
-		m_Handlers.reserve(16);
-}
-	virtual ~CommandDispatcher() {}
-
-	void AddHandler(ICommandHandler* handler)
-	{
-		for (size_t i = 0; i < m_Handlers.size(); ++i) {
-			if (m_Handlers[i] == handler) {
-				return;
-			}
-		}
-		m_Handlers.push_back(handler);
-	}
-
-	void DelHandler(ICommandHandler* handler)
-	{
-		for(size_t i = 0; i < m_Handlers.size(); ++i) {
-			if (m_Handlers[i] == handler) {
-				m_Handlers.erase(m_Handlers.begin() + i);
-				break;
-			}
-		}
-	}
-
-	bool Dispatch(Command& cmd)
-	{
-		for(size_t i = 0; i < m_Handlers.size(); ++i) {
-			if (m_Handlers[i]->Receive(cmd)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-private:
-	std::vector<ICommandHandler*> m_Handlers;
-};
-
-class Dispatched : public ICommandHandler
-{
-public:
-	Dispatched(CommandDispatcher* _dispatcher)
-		: m_Dispatcher(_dispatcher)
-	{
-		if (m_Dispatcher != nullptr)
-		{
-			m_Dispatcher->AddHandler(this);
-		}
-	}
-
-	virtual ~Dispatched()
-	{
-		if (m_Dispatcher != nullptr)
-		{
-			m_Dispatcher->DelHandler(this);
-		}
-	}
-
-protected:
-	CommandDispatcher* m_Dispatcher;
-};
-
-class CommandSendBlocking : public ICommandHandler
-{
-	pthread_mutex_t count_mutex;
-	pthread_cond_t count_threshold_cv;
-	volatile bool received;
-	eCommand command;
-
-	static const long timeOut = 10; // Timeout in seconds
-
-	virtual bool Handle(Command& cmd);
-
-public:
-
-	Command*  m_Response;
-
-	CommandSendBlocking();
-	virtual ~CommandSendBlocking() {}
-
-	bool SendBlocking(const Command& cmd, ICommandHandler& dest, CommandDispatcher& disp);
 };
 
 #endif /* COMMAND_H_ */

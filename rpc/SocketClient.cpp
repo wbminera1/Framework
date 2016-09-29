@@ -52,12 +52,20 @@ bool SocketClient::Start()
 	m_RecThread.Create();
 	m_SendThread.Create();
 
+	Log(LOG_INFO, __FUNCTION__ " stopped");
+	return true;
+}
+
+void SocketClient::Stop()
+{
+	Log(LOG_INFO, __FUNCTION__ " started");
+
 	m_RecThread.Join();
 	m_SendThread.Join();
 
 	m_Socket.Close();
+
 	Log(LOG_INFO, __FUNCTION__ " stopped");
-	return true;
 }
 
 void SocketClient::RecThread::Process() {
@@ -66,23 +74,23 @@ void SocketClient::RecThread::Process() {
 		std::vector<char> data;
 		while (!m_Stop)
 		{
-			auto res = m_Client->m_Socket.RecV(data, MAX_COMMAND_SIZE);
+			auto res = m_Client->m_Socket.RecV(data, Command::MAX_COMMAND_SIZE);
 			if (!res) {
 				Log(LOG_ERR, "RecThread - RecV function failed with error: %d\n", WSAGetLastError());
 				break;
 			}
 			Log(LOG_INFO, "RecThread - RecV %d bytes\n", data.size());
 			uint32_t* dataSize = (uint32_t*)&data[0];
-			if (*dataSize > MAX_COMMAND_SIZE) {
+			if (*dataSize > Command::MAX_COMMAND_SIZE) {
 				Log(LOG_ERR, "RecThread - wrong data size: %d\n", *dataSize);
 				data.clear();
 				continue;
 			}
 			if (data.size() >= *dataSize) {
-				if (m_Client->m_Dispatcher != nullptr) {
-					//!!m_Client->m_Dispatcher->Dispatch();
+				Command* cmd = Command::Create(data);
+				if (cmd != NULL && m_Client->m_Dispatcher != nullptr) {
+					m_Client->m_Dispatcher->Dispatch(*cmd);
 				}
-				data.erase(data.begin(), data.begin() + *dataSize);
 			}
 		}
 	}

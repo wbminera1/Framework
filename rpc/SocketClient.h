@@ -11,8 +11,7 @@
 #include "../thread/Condition.h"
 
 #include "Command.h"
-
-class CommandDispatcher;
+#include "CommandDispatcher.h"
 
 class SocketClient : public Dispatched, public thread::Thread
 {
@@ -25,6 +24,7 @@ public:
 	virtual bool Send(const Command& cmd);
 
 	bool Start();
+	void Stop();
 
 private:
 	
@@ -54,8 +54,6 @@ private:
 
 		SocketClient* m_Client;
 	};
-
-	static const size_t MAX_COMMAND_SIZE = 1024;
 
 	sockets::Socket m_Socket;
 	sockets::SocketAddress m_Addr;

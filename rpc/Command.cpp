@@ -8,71 +8,73 @@
 
 void Command::Serialize(std::vector<char>& commandBuffer) const
 {
-	toBuffer(commandBuffer, command);
+	toBuffer(commandBuffer, m_Command);
 }
 
 
 void Command::Deserialize(const std::vector<char>& commandBuffer)
 {
+	fromBuffer(commandBuffer, sizeof(uint32_t), m_Command);
 }
 
-
-CommandSendBlocking::CommandSendBlocking()
-  : received(false)
-  , command(cError)
-  , m_Response(nullptr)
+Command* Command::Create(std::vector<char>& data)
 {
-  //count_mutex .value = PTHREAD_MUTEX_INITIALIZER;
-  //count_threshold_cv.value = PTHREAD_COND_INITIALIZER;
+	// uint32 size
+	// uint32 type
+	// uint32 id
+	// ... command body
+	uint32_t* dataSize = (uint32_t*)&data[0];
+	if (*dataSize > Command::MAX_COMMAND_SIZE) {
+		Log(LOG_ERR, "Wrong command size: %d\n", *dataSize);
+		return nullptr;
+	}
+	uint32_t* type = dataSize + 1;
+	if (*type == cFirst || *type >= cLast) {
+		Log(LOG_ERR, "Wrong command type: %d\n", *type);
+		return nullptr;
+	}
+
+	Log(LOG_INFO, "Command size: %d type: %d\n", *dataSize, *type);
+	
+	Command* cmd = Create((eCommand)*type);
+
+	if (cmd != nullptr) {
+		cmd->Deserialize(data);
+	}
+
+	data.erase(data.begin(), data.begin() + *dataSize);
+
+	return cmd;
 }
 
-
-bool CommandSendBlocking::SendBlocking(const Command& cmd, ICommandHandler& dest, CommandDispatcher& disp)
+Command* Command::Create(eCommand command)
 {
-  bool status = true;
-
-  pthread_mutex_lock(&count_mutex);
-//  struct timespec timeToWait;
-//  clock_gettime(CLOCK_MONOTONIC, &timeToWait);
-//  timeToWait.tv_sec += timeOut;
-
-  received = false;
-  command = cmd.command;
-  disp.AddHandler(this);
-  dest.Send(cmd);
-  while (!received)
-  {
-//    int l_rt = pthread_cond_timedwait_monotonic_np(&count_threshold_cv, &count_mutex, &timeToWait);
-//    if (l_rt == ETIMEDOUT)
-    {
-      Log(LOG_ERR, "CommandSendBlocking::sendBlocking timeout!");
-      break;
-    }
-  }
-  disp.DelHandler(this);
-  pthread_mutex_unlock(&count_mutex);
-  return status;
+	Command* cmd = nullptr;
+	switch (command)
+	{
+	cError:
+	cResponse:
+	cConnect:
+	cDisconnect:
+	cExit:
+	cJSONCommand:
+	cBinaryCommand:
+	default:
+		cmd = new Command(command);
+		break;
+	}
+	return cmd;
 }
 
-bool CommandSendBlocking::Handle(Command& cmd)
+
+void Command::Destroy(Command* cmd)
 {
-  if (cmd.command == cResponse)
-  {
-    pthread_mutex_lock(&count_mutex);
-    if (m_Response != NULL)
-    {
-      m_Response->command = cmd.command;
-    }
-    received = true;
-    pthread_cond_signal(&count_threshold_cv);
-    pthread_mutex_unlock(&count_mutex);
-    return true;
-  }
-  return false;
+	delete cmd;
 }
+
 
 void Command::Test(void)
 {
   Command cmd;
-  cmd.command = cPing;
+  cmd.m_Command = cConnect;
 }
