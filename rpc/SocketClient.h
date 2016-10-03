@@ -20,7 +20,7 @@ public:
 	SocketClient(const sockets::SocketAddress& addr, CommandDispatcher* dispatcher);
 	virtual ~SocketClient();
 
-	virtual bool Receive(Command& cmd) { return false; }
+	virtual bool Receive(const Command& cmd) { return false; }
 	virtual bool Send(const Command& cmd);
 
 	bool Start();

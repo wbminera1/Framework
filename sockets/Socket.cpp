@@ -9,7 +9,7 @@ namespace sockets
 		WSADATA wsaData;
 		int res = WSAStartup(MAKEWORD(2, 2), &wsaData);
 		if (res != 0) {
-			Log(LOG_ERR, "WSAStartup failed: %d\n", res);
+			Log(LOG_ERR, "WSAStartup failed: %d", res);
 		}
 	}
 
@@ -17,7 +17,7 @@ namespace sockets
 	{
 		int res = WSACleanup();
 		if (res != 0) {
-			Log(LOG_ERR, "WSACleanup failed: %d\n", res);
+			Log(LOG_ERR, "WSACleanup failed: %d", res);
 		}
 	}
 

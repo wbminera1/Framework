@@ -43,11 +43,11 @@ bool SocketClient::Start()
 		m_Socket.Connect(m_Addr);
 	}
 	if (!m_Socket.IsValid()) {
-		Log(LOG_ERR, "SocketClient - Connect failed with error: %d\n", WSAGetLastError());
+		Log(LOG_ERR, "SocketClient - Connect failed with error: %d", WSAGetLastError());
 		return false;
 	}
 
-	Log(LOG_INFO, "SocketClient - connected\n");
+	Log(LOG_INFO, "SocketClient - connected");
 
 	m_RecThread.Create();
 	m_SendThread.Create();
@@ -76,20 +76,20 @@ void SocketClient::RecThread::Process() {
 		{
 			auto res = m_Client->m_Socket.RecV(data, Command::MAX_COMMAND_SIZE);
 			if (!res) {
-				Log(LOG_ERR, "RecThread - RecV function failed with error: %d\n", WSAGetLastError());
+				Log(LOG_ERR, "RecThread - RecV function failed with error: %d", WSAGetLastError());
 				break;
 			}
-			Log(LOG_INFO, "RecThread - RecV %d bytes\n", data.size());
+			Log(LOG_INFO, "RecThread - RecV %d bytes", data.size());
 			uint32_t* dataSize = (uint32_t*)&data[0];
 			if (*dataSize > Command::MAX_COMMAND_SIZE) {
-				Log(LOG_ERR, "RecThread - wrong data size: %d\n", *dataSize);
+				Log(LOG_ERR, "RecThread - wrong data size: %d", *dataSize);
 				data.clear();
 				continue;
 			}
 			if (data.size() >= *dataSize) {
 				Command* cmd = Command::Create(data);
 				if (cmd != NULL && m_Client->m_Dispatcher != nullptr) {
-					m_Client->m_Dispatcher->Dispatch(*cmd);
+					m_Client->m_Dispatcher->Dispatch(*cmd, m_Client);
 				}
 			}
 		}
@@ -110,11 +110,11 @@ void SocketClient::SendThread::Process() {
 		{
 			auto res = m_Client->m_Socket.Send(m_Client->m_CommandBuffer);
 			if (res == SOCKET_ERROR) {
-				Log(LOG_ERR, "send function failed with error: %d\n", WSAGetLastError());
+				Log(LOG_ERR, "send function failed with error: %d", WSAGetLastError());
 				break;
 			}
 			m_Client->m_CommandBuffer.clear();
-			Log(LOG_INFO, "sent %d bytes\n", res);
+			Log(LOG_INFO, "sent %d bytes", res);
 		}
 		m_Client->m_CommandMutex.Unlock();
 

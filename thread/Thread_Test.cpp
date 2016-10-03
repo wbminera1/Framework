@@ -13,8 +13,8 @@ void TestThread()
 	{
 		void Process()
 		{
-			Log(LOG_INFO, "Sizeof %d\n", sizeof(this->m_Thread));
-			Log(LOG_INFO, "Thread %lx\n", m_Thread);
+			Log(LOG_INFO, "Sizeof %d", sizeof(this->m_Thread));
+			Log(LOG_INFO, "Thread %lx", m_Thread);
 		}
 	};
 	TestThread th1, th2;
@@ -40,13 +40,13 @@ void TestMutex()
 
 		void Process()
 		{
-			Log(LOG_INFO, "Thread %s started\n", m_Name);
+			Log(LOG_INFO, "Thread %s started", m_Name);
 			m_Cond.Lock();
-			Log(LOG_INFO, "Thread %s before condition\n", m_Name);
+			Log(LOG_INFO, "Thread %s before condition", m_Name);
 			m_Cond.TimedWait(3);
-			Log(LOG_INFO, "Thread %s after condition\n", m_Name);
+			Log(LOG_INFO, "Thread %s after condition", m_Name);
 			m_Cond.Unlock();
-			Log(LOG_INFO, "Thread %s stopped\n", m_Name);
+			Log(LOG_INFO, "Thread %s stopped", m_Name);
 		}
 
 	private:
@@ -55,18 +55,18 @@ void TestMutex()
 		thread::Condition& m_Cond;
 	};
 
-	Log(LOG_INFO, "Test started\n");
+	Log(LOG_INFO, "Test started");
 	thread::Mutex mutex;
 	thread::Condition cond;
 	TThread t1("T1", mutex, cond);
 	t1.Create();
 	Sleep(2000);
 	cond.Lock();
-	Log(LOG_INFO, "Signaled\n");
+	Log(LOG_INFO, "Signaled");
 	cond.Signal();
 	cond.Unlock();
 	t1.Join();
-	Log(LOG_INFO, "Test stopped\n");
+	Log(LOG_INFO, "Test stopped");
 }
 
 void TestThreadPool()
@@ -77,22 +77,22 @@ void TestThreadPool()
 		{
 			while (!m_Stop)
 			{
-				Log(LOG_INFO, "TestThread %lx\n", m_Thread);
+				Log(LOG_INFO, "TestThread %lx", m_Thread);
 				Sleep(100);
 			}
 		}
 	};
 
 	thread::ThreadPool<TestThread> tp(10);
-	Log(LOG_INFO, "ThreadPool creating\n");
+	Log(LOG_INFO, "ThreadPool creating");
 	tp.Create();
-	Log(LOG_INFO, "ThreadPool sleeping\n");
+	Log(LOG_INFO, "ThreadPool sleeping");
 	Sleep(1000);
-	Log(LOG_INFO, "ThreadPool stopping\n");
+	Log(LOG_INFO, "ThreadPool stopping");
 	tp.Stop();
-	Log(LOG_INFO, "ThreadPool joining\n");
+	Log(LOG_INFO, "ThreadPool joining");
 	tp.Join();
-	Log(LOG_INFO, "ThreadPool finished\n");
+	Log(LOG_INFO, "ThreadPool finished");
 }
 
 

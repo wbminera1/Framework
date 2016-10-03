@@ -5,7 +5,7 @@
 class ICommandHandler {
 public:
 	virtual ~ICommandHandler() {}
-	virtual bool Receive(Command& cmd) = 0;
+	virtual bool Receive(const Command& cmd) = 0;
 	virtual bool Send(const Command& cmd) = 0;
 };
 
@@ -38,11 +38,13 @@ public:
 		}
 	}
 
-	bool Dispatch(Command& cmd)
+	bool Dispatch(const Command& cmd, ICommandHandler* source)
 	{
 		for(size_t i = 0; i < m_Handlers.size(); ++i) {
-			if (m_Handlers[i]->Receive(cmd)) {
-				return true;
+			if (m_Handlers[i] != source) {
+				if (m_Handlers[i]->Receive(cmd)) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -58,16 +60,14 @@ public:
 	Dispatched(CommandDispatcher* _dispatcher)
 		: m_Dispatcher(_dispatcher)
 	{
-		if (m_Dispatcher != nullptr)
-		{
+		if (m_Dispatcher != nullptr) {
 			m_Dispatcher->AddHandler(this);
 		}
 	}
 
 	virtual ~Dispatched()
 	{
-		if (m_Dispatcher != nullptr)
-		{
+		if (m_Dispatcher != nullptr) {
 			m_Dispatcher->DelHandler(this);
 		}
 	}

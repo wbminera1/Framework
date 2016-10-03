@@ -9,7 +9,9 @@ static int LogLevel = LOG_DEBUG;
 
 void SetLogLevel(int level)
 {
-  LogLevel = level;
+	if (level < LOG_LAST) {
+		LogLevel = level;
+	}
 }
 
 void Log(int level, const char* format, ...)
@@ -23,6 +25,10 @@ void Log(int level, const char* format, ...)
 	  vsnprintf(buffer + loff, sizeof(buffer) - loff - 1, format, args);
 	  va_end(args);
 
+	  //
+	  HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	  WORD levelColors[LOG_LAST] = { FOREGROUND_RED | FOREGROUND_INTENSITY, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY, FOREGROUND_GREEN | FOREGROUND_INTENSITY, FOREGROUND_INTENSITY };
+	  SetConsoleTextAttribute(hConsole, levelColors[level]);
 	  puts(buffer);
 
 	  OutputDebugStringA(buffer); 

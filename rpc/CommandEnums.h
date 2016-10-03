@@ -34,13 +34,13 @@ BEGIN_ENUM(Command)
 }
 END_ENUM(Command)
 
-BEGIN_ENUM(Status)
+BEGIN_ENUM(Response)
 {
 	DECL_ENUM(sOk),
 	DECL_ENUM(sFail),
 	DECL_ENUM(sWrongCommand)
 }
-END_ENUM(Status)
+END_ENUM(Response)
 
 
 #endif /* COMMANDENUMS_H_ */

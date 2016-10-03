@@ -52,7 +52,7 @@ namespace sockets
 			}
 			m_Socket = socket(af, sock, ip);
 			if (!IsValid()) {
-				Log(LOG_ERR, "socket function failed with error: %d\n", WSAGetLastError());
+				Log(LOG_ERR, "socket function failed with error: %d", WSAGetLastError());
 				return false;
 			}
 			return true;
@@ -62,7 +62,7 @@ namespace sockets
 			if (IsValid()) {
 				int res = closesocket(m_Socket);
 				if (res == SOCKET_ERROR) {
-					Log(LOG_ERR, "closesocket function failed with error: %d\n", WSAGetLastError());
+					Log(LOG_ERR, "closesocket function failed with error: %d", WSAGetLastError());
 				}
 				m_Socket = INVALID_SOCKET;
 			}
@@ -72,7 +72,7 @@ namespace sockets
 		{
 			auto res = connect(m_Socket, addr.getAddr(), (int)addr.getAddrSize());
 			if (res == SOCKET_ERROR) {
-				Log(LOG_ERR, "connect function failed with error: %d\n", WSAGetLastError());
+				Log(LOG_ERR, "connect function failed with error: %d", WSAGetLastError());
 				return false;
 			}
 			return true;
@@ -81,7 +81,7 @@ namespace sockets
 		bool Bind(const SocketAddress& addr)
 		{
 			if (bind(m_Socket, addr.getAddr(), (int)addr.getAddrSize()) == SOCKET_ERROR) {
-				Log(LOG_ERR, "bind failed with error: %d\n", WSAGetLastError());
+				Log(LOG_ERR, "bind failed with error: %d", WSAGetLastError());
 				return false;
 			}
 			return true;
@@ -91,7 +91,7 @@ namespace sockets
 		{
 			if (listen(m_Socket, maxConnections) == -1)
 			{
-				Log(LOG_ERR, "listen failed with error: %d\n", WSAGetLastError());
+				Log(LOG_ERR, "listen failed with error: %d", WSAGetLastError());
 				return false;
 			}
 			return true;
@@ -105,7 +105,7 @@ namespace sockets
 			m_Socket = accept(listened.m_Socket, (sockaddr *)&connectedAddr.m_addr, (int*)&connectedAddr.m_addrSize);
 			if (!IsValid())
 			{
-				Log(LOG_ERR, "accept error: %d\n", WSAGetLastError());
+				Log(LOG_ERR, "accept error: %d", WSAGetLastError());
 				return false;
 			}
 			return true;
@@ -119,14 +119,14 @@ namespace sockets
 				const int flags = 0;
 				auto bytes_received = recv(m_Socket, &data[currentSize], (int)(data.capacity() - currentSize), flags);
 				if (bytes_received > 0) {
-					Log(LOG_INFO, "RecV - received %d\n", bytes_received);
+					Log(LOG_INFO, "RecV - received %d", bytes_received);
 					data.resize(bytes_received + currentSize);
 				}
 				else if (bytes_received == 0) {
-					Log(LOG_INFO, "RecV - host shutdown.\n");
+					Log(LOG_INFO, "RecV - host shutdown.");
 				}
 				else { // (bytes_received < 0)
-					Log(LOG_ERR, "RecV - receive error: %d\n", bytes_received);
+					Log(LOG_ERR, "RecV - receive error: %d", bytes_received);
 				}
 				return bytes_received != 0;
 			}
@@ -138,13 +138,13 @@ namespace sockets
 			const int flags = 0;
 			auto bytes_sent = send(m_Socket, &data[0], (int)data.size(), flags);
 			if (bytes_sent > 0) {
-				Log(LOG_INFO, "Send - sent %d\n", bytes_sent);
+				Log(LOG_INFO, "Send - sent %d", bytes_sent);
 			}
 			else if (bytes_sent == 0) {
-				Log(LOG_INFO, "Send - host shutdown.\n");
+				Log(LOG_INFO, "Send - host shutdown.");
 			}
 			else { // (bytes_received < 0)
-				Log(LOG_ERR, "Send - receive error: %d\n", WSAGetLastError());
+				Log(LOG_ERR, "Send - receive error: %d", WSAGetLastError());
 			}
 			return bytes_sent;
 		}
