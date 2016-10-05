@@ -34,7 +34,7 @@ bool SocketServer::Start()
 				Log(LOG_INFO, "SocketServer - accepted");
 				SocketClient* sc = new SocketClient(connectedS, connectedA, m_Dispatcher);
 				sc->Start();
-				Log(LOG_INFO, "SocketServer - client spawned");
+				Log(LOG_WARNING, "SocketServer - client spawned");
 			}
 		}
 	}

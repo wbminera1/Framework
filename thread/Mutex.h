@@ -2,6 +2,7 @@
 #define MUTEX_H_
 
 #include <pthread.h>
+#include "../common/Log.h"
 
 namespace thread
 {
@@ -54,6 +55,26 @@ namespace thread
 	    private:
 	        pthread_mutex_t m_Mutex;
 	};
+
+	template <class T>
+	class LockGuard
+	{
+		public:
+			LockGuard(T& lockable) : m_Lockable(lockable) 
+			{ 
+				m_Lockable.Lock(); 
+				Log(LOG_DEBUG, __FUNCTION__ " locked");
+			}
+			
+			~LockGuard() 
+			{ 
+				Log(LOG_DEBUG, __FUNCTION__ " unlocked");
+				m_Lockable.Unlock();
+			}
+	private:
+		T& m_Lockable;
+	};
+
 } // namespace thread
 
 

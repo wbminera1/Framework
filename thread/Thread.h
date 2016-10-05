@@ -1,5 +1,6 @@
 #ifndef THREAD_H_
 #define THREAD_H_
+#include <excpt.h>
 #include <pthread.h>
 
 namespace thread
@@ -41,13 +42,20 @@ class Thread
 
         pthread_t m_Thread;
 
-        static void* Start ( void *ptr )
+        static void* Start ( void* ptr )
         {
 			Thread* self = static_cast<Thread*>(ptr);
+			pthread_cleanup_push(Cleanup, ptr);
 			self->m_Stop = false;
             self->Process();
+			pthread_cleanup_pop(1);
             return NULL;
         }
+
+		static void Cleanup(void* ptr)
+		{
+			Thread* self = static_cast<Thread*>(ptr);
+		}
 };
 
 } // namespace thread

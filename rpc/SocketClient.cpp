@@ -23,17 +23,20 @@ SocketClient::~SocketClient()
 {
 }
 
-bool SocketClient::Send(const Command& cmd)
+bool SocketClient::Handle(const Command& cmd, ICommandHandler* source)
 {
-	m_CommandMutex.Lock();
-	m_CommandBuffer.clear();
-	cmd.Serialize(m_CommandBuffer);
-	m_CommandWait.Lock();
-	m_CommandWait.Signal();
-	m_CommandWait.Unlock();
-	m_CommandMutex.Unlock();
+	Log(LOG_INFO, __FUNCTION__ " started");
+	thread::LockGuard<thread::Mutex> cmdLock(m_CommandMutex);
+	{
+		thread::LockGuard<thread::Condition> cmdLock(m_CommandWait);
+		m_CommandBuffer.clear();
+		cmd.Serialize(m_CommandBuffer);
+		m_CommandWait.Signal();
+	}
+	Log(LOG_INFO, __FUNCTION__ " stopped");
 	return true;
 }
+
 
 bool SocketClient::Start()
 {
@@ -101,23 +104,27 @@ void SocketClient::RecThread::Process() {
 }
 
 void SocketClient::SendThread::Process() {
-	m_Client->m_CommandWait.Lock();
+	thread::LockGuard<thread::Condition> cmdLock(m_Client->m_CommandWait);
 	while (!m_Stop)
 	{
+		Log(LOG_INFO, __FUNCTION__ " on wait");
 		m_Client->m_CommandWait.Wait();
-		m_Client->m_CommandMutex.Lock();
-		if (m_Client->m_CommandBuffer.size() > 0)
 		{
-			auto res = m_Client->m_Socket.Send(m_Client->m_CommandBuffer);
-			if (res == SOCKET_ERROR) {
-				Log(LOG_ERR, "send function failed with error: %d", WSAGetLastError());
-				break;
+			thread::LockGuard<thread::Mutex> cmdLock(m_Client->m_CommandMutex);
+			if (m_Client->m_CommandBuffer.size() > 0)
+			{
+				auto res = m_Client->m_Socket.Send(m_Client->m_CommandBuffer);
+				if (res == SOCKET_ERROR) {
+					Log(LOG_ERR, __FUNCTION__ "send function failed with error: %d", WSAGetLastError());
+					break;
+				}
+				m_Client->m_CommandBuffer.clear();
+				Log(LOG_INFO, __FUNCTION__ "sent %d bytes", res);
 			}
-			m_Client->m_CommandBuffer.clear();
-			Log(LOG_INFO, "sent %d bytes", res);
+			else
+			{
+				Log(LOG_ERR, __FUNCTION__ " triggered, but commandBuffer is empty");
+			}
 		}
-		m_Client->m_CommandMutex.Unlock();
-
 	}
-	m_Client->m_CommandWait.Unlock();
 }

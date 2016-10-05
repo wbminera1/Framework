@@ -31,6 +31,7 @@ void Log(int level, const char* format, ...)
 	  SetConsoleTextAttribute(hConsole, levelColors[level]);
 	  puts(buffer);
 
+	  strncat(buffer, "\n", sizeof(buffer) - 1);
 	  OutputDebugStringA(buffer); 
 
 	  static FILE* lf = NULL;

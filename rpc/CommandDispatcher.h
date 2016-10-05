@@ -5,8 +5,7 @@
 class ICommandHandler {
 public:
 	virtual ~ICommandHandler() {}
-	virtual bool Receive(const Command& cmd) = 0;
-	virtual bool Send(const Command& cmd) = 0;
+	virtual bool Handle(const Command& cmd, ICommandHandler* source) = 0;
 };
 
 class CommandDispatcher
@@ -42,7 +41,7 @@ public:
 	{
 		for(size_t i = 0; i < m_Handlers.size(); ++i) {
 			if (m_Handlers[i] != source) {
-				if (m_Handlers[i]->Receive(cmd)) {
+				if (m_Handlers[i]->Handle(cmd, source)) {
 					return true;
 				}
 			}

@@ -21,7 +21,7 @@ public:
 
 	typedef bool (TestCommandProcessor::*ReceiveCommandFn)(const Command& cmd);
 
-	virtual bool Receive(const Command& cmd)
+	virtual bool Handle(const Command& cmd, ICommandHandler* source)
 	{
 		Log(LOG_INFO, __FUNCTION__ " Command %s", ToString(cmd.m_Command));
 		/*
@@ -45,13 +45,6 @@ public:
 		return ReceiveCommand(cmd);
 	}
 
-	virtual bool Send(const Command& cmd)
-	{
-		Log(LOG_INFO, __FUNCTION__ " Command %s", ToString(cmd.m_Command));
-		m_Dispatcher->Dispatch(cmd, this);
-		return false;
-	}
-
 	bool ReceiveCommand(const Command& cmd)
 	{
 		Log(LOG_INFO, __FUNCTION__ " Command %s not handled", ToString(cmd.m_Command));
@@ -64,7 +57,7 @@ public:
 		const CommandConnect& cmdConnect((const CommandConnect&)cmd);
 		Log(LOG_INFO, __FUNCTION__ " Version %d", cmdConnect.m_Version);
 		CommandResponse cmdResponse(cmd, cmdConnect.m_Version == Command::VERSION ? sOk : sFail);
-		Send(cmdResponse);
+		m_Dispatcher->Dispatch(cmdResponse, this);
 		return false;
 	}
 

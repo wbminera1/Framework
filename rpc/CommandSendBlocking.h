@@ -11,7 +11,7 @@ class CommandSendBlocking : public ICommandHandler
 
 	static const long timeOut = 10; // Timeout in seconds
 
-	virtual bool Handle(Command& cmd);
+	virtual bool Handle(Command& cmd, ICommandHandler* source);
 
 public:
 

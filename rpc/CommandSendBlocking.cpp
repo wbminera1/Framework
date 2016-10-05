@@ -20,7 +20,7 @@ bool CommandSendBlocking::SendBlocking(const Command& cmd, ICommandHandler& dest
 	received = false;
 	command = cmd.m_Command;
 	disp.AddHandler(this);
-	dest.Send(cmd);
+	dest.Handle(cmd, this);
 	while (!received)
 	{
 		//    int l_rt = pthread_cond_timedwait_monotonic_np(&count_threshold_cv, &count_mutex, &timeToWait);
@@ -35,7 +35,7 @@ bool CommandSendBlocking::SendBlocking(const Command& cmd, ICommandHandler& dest
 	return status;
 }
 
-bool CommandSendBlocking::Handle(Command& cmd)
+bool CommandSendBlocking::Handle(Command& cmd, ICommandHandler* source)
 {
 	if (cmd.m_Command == cResponse)
 	{
