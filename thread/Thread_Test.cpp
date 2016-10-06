@@ -69,7 +69,7 @@ void TestMutex()
 	Log(LOG_INFO, "Test stopped");
 }
 
-void TestThreadPool()
+void TestPool()
 {
 	class TestThread : public thread::Thread
 	{
@@ -81,9 +81,25 @@ void TestThreadPool()
 				Sleep(100);
 			}
 		}
+
 	};
 
-	thread::ThreadPool<TestThread> tp(10);
+	class TestThreadPool : public thread::ThreadPool<TestThread>
+	{
+		public:
+			TestThreadPool(size_t size) : ThreadPool(size) {}
+			virtual void OnStart(thread::Thread* thread)
+			{
+				Log(LOG_INFO, "OnStart %lx", thread);
+			}
+
+			virtual void OnStop(thread::Thread* thread)
+			{
+				Log(LOG_INFO, "OnStop %lx", thread);
+			}
+	};
+
+	TestThreadPool tp(10);
 	Log(LOG_INFO, "ThreadPool creating");
 	tp.Create();
 	Log(LOG_INFO, "ThreadPool sleeping");
@@ -100,6 +116,6 @@ int Thread_Test()
 {
 	//TestThread();
 	//TestMutex();
-	TestThreadPool();
+	TestPool();
 	return 0;
 }
