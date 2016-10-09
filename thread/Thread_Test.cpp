@@ -11,6 +11,11 @@ void TestThread()
 {
 	class TestThread : public thread::Thread
 	{
+	public:
+		TestThread() : Thread(__FUNCTION__)
+		{
+
+		}
 		void Process()
 		{
 			Log(LOG_INFO, "Sizeof %d", sizeof(this->m_Thread));
@@ -31,7 +36,8 @@ void TestMutex()
 	{
 	public:
 		TThread(const char* name, thread::Mutex& mutex, thread::Condition& cond)
-			: m_Name(name)
+			: Thread(__FUNCTION__)
+			, m_Name(name)
 			, m_Mutex(mutex)
 			, m_Cond(cond)
 		{
@@ -73,6 +79,12 @@ void TestPool()
 {
 	class TestThread : public thread::Thread
 	{
+	public:
+		TestThread() : Thread(__FUNCTION__)
+		{
+
+		}
+
 		void Process()
 		{
 			while (!m_Stop)

@@ -8,8 +8,10 @@
 #include "Command.h"
 
 SocketServer::SocketServer(int port, CommandDispatcher* dispatcher)
-  : m_Dispatcher(dispatcher)
+	: Thread(__FUNCTION__)
+	, m_Dispatcher(dispatcher)
   , m_Port(port)
+  , m_Pool(MAX_CONNECTIONS)
 {
 }
 
@@ -32,8 +34,12 @@ bool SocketServer::Start()
 			if (connectedS.Accept(serverS, connectedA))
 			{
 				Log(LOG_INFO, "SocketServer - accepted");
-				SocketClient* sc = new SocketClient(connectedS, connectedA, m_Dispatcher);
-				sc->Start();
+				SocketClient* sc = m_Pool.Get();
+				if (sc != nullptr)
+				{
+					sc->SetConnection(connectedS, connectedA, m_Dispatcher);
+					sc->Create();
+				}
 				Log(LOG_WARNING, "SocketServer - client spawned");
 			}
 		}

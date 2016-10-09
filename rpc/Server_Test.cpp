@@ -57,7 +57,7 @@ public:
 		const CommandConnect& cmdConnect((const CommandConnect&)cmd);
 		Log(LOG_INFO, __FUNCTION__ " Version %d", cmdConnect.m_Version);
 		CommandResponse cmdResponse(cmd, cmdConnect.m_Version == Command::VERSION ? sOk : sFail);
-		m_Dispatcher->Dispatch(cmdResponse, this);
+		GetDispatcher()->Dispatch(cmdResponse, this);
 		return false;
 	}
 

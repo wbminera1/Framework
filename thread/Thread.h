@@ -1,7 +1,7 @@
 #ifndef THREAD_H_
 #define THREAD_H_
 #include <string.h>
-#include <excpt.h>
+#include <string>
 #include <pthread.h>
 
 namespace thread
@@ -10,6 +10,7 @@ namespace thread
 class Thread
 {
     public:
+
 		struct ThreadEventArgs
 		{
 			ThreadEventArgs() : m_Thread(nullptr), m_DataPtr(nullptr) { }
@@ -17,24 +18,26 @@ class Thread
 			void*   m_DataPtr;
 		};
 
-		typedef void (*ThreadEventFn)(ThreadEventArgs* arg);
+		typedef void(*ThreadEventFn)(ThreadEventArgs* arg);
 
-		struct ThreadEvent
-		{
-			ThreadEvent() : m_Fn(nullptr) { }
-			ThreadEventArgs m_Args;
-			ThreadEventFn   m_Fn;
-		};
-
-        Thread() 
+        Thread(const char* name = nullptr) 
 			: m_Stop(false)
 		{ 
 			memset(&m_Thread, 0, sizeof(m_Thread));
+			SetName(name);
 		}
 
         virtual ~Thread() { }
 
-        int Create()
+		void SetName(const char* name)
+		{
+			if (name != nullptr)
+			{
+				m_Name = name;
+			}
+		}
+
+		virtual int Create()
         {
             pthread_attr_t attr;
             pthread_attr_init(&attr);
@@ -51,7 +54,7 @@ class Thread
             return res;
         }
 
-        void Stop()
+		virtual void Stop()
         {
             m_Stop = true;
         }
@@ -70,37 +73,25 @@ class Thread
 			m_OnStop.m_Args.m_DataPtr = dataPtr;
 		}
 
-    protected:
+protected:
+		virtual void Process();
 
-        virtual void Process() = 0;
+		struct ThreadEvent
+		{
+			ThreadEvent() : m_Fn(nullptr) { }
+			ThreadEventArgs m_Args;
+			ThreadEventFn   m_Fn;
+		};
 
         volatile bool m_Stop;
 
 		ThreadEvent m_OnStart;
 		ThreadEvent m_OnStop;
         pthread_t m_Thread;
+		std::string m_Name;
 
-        static void* Start ( void* ptr )
-        {
-			Thread* self = static_cast<Thread*>(ptr);
-			pthread_cleanup_push(Cleanup, ptr);
-			self->m_Stop = false;
-			if (self->m_OnStart.m_Fn != nullptr) {
-				(*self->m_OnStart.m_Fn)(&self->m_OnStart.m_Args);
-			}
-            self->Process();
-			self->m_Stop = true;
-			pthread_cleanup_pop(1);
-            return NULL;
-        }
-
-		static void Cleanup(void* ptr)
-		{
-			Thread* self = static_cast<Thread*>(ptr);
-			if (self->m_OnStop.m_Fn != nullptr) {
-				(*self->m_OnStop.m_Fn)(&self->m_OnStop.m_Args);
-			}
-		}
+		static void* Start(void* ptr);
+		static void Cleanup(void* ptr);
 
 };
 

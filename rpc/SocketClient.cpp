@@ -2,26 +2,33 @@
 #include "SocketClient.h"
 
 
-SocketClient::SocketClient(sockets::Socket& sock, const sockets::SocketAddress& addr, CommandDispatcher* dispatcher)
-	: SocketClient(addr, dispatcher)
-{
-	m_Socket = std::move(sock);
-}
-
-SocketClient::SocketClient(const sockets::SocketAddress& addr, CommandDispatcher* dispatcher)
-	: Dispatched(dispatcher)
-	, m_Addr(addr)
+SocketClient::SocketClient()
+	: Dispatched(nullptr)
+	, Thread(__FUNCTION__)
+	, m_Addr(0)
 	, m_RecThread(this)
 	, m_SendThread(this)
 {
 	m_CommandBuffer.reserve(1024);
 }
 
-
-
 SocketClient::~SocketClient()
 {
 }
+
+void SocketClient::SetConnection(sockets::Socket& sock, const sockets::SocketAddress& addr, CommandDispatcher* dispatcher)
+{
+	m_Socket = std::move(sock);
+	m_Addr = addr;
+	SetDispatcher(dispatcher);
+}
+
+void SocketClient::SetAddr(const sockets::SocketAddress& addr, CommandDispatcher* dispatcher)
+{
+	m_Addr = addr;
+	SetDispatcher(dispatcher);
+}
+
 
 bool SocketClient::Handle(const Command& cmd, ICommandHandler* source)
 {
@@ -38,25 +45,30 @@ bool SocketClient::Handle(const Command& cmd, ICommandHandler* source)
 }
 
 
-bool SocketClient::Start()
+void SocketClient::Process()
 {
 	Log(LOG_INFO, __FUNCTION__ " started");
 	if (!m_Socket.IsValid()) {
 		m_Socket.Open();
 		m_Socket.Connect(m_Addr);
 	}
-	if (!m_Socket.IsValid()) {
-		Log(LOG_ERR, "SocketClient - Connect failed with error: %d", WSAGetLastError());
-		return false;
+	if (m_Socket.IsValid()) {
+		Log(LOG_INFO, "SocketClient - connected");
+
+
+		m_RecThread.Create();
+		m_SendThread.Create();
+
+		Thread::Process();
+
+		m_RecThread.Join();
+		m_SendThread.Join();
 	}
-
-	Log(LOG_INFO, "SocketClient - connected");
-
-	m_RecThread.Create();
-	m_SendThread.Create();
-
+	else
+	{
+		Log(LOG_ERR, "SocketClient - Connect failed with error: %d", WSAGetLastError());
+	}
 	Log(LOG_INFO, __FUNCTION__ " stopped");
-	return true;
 }
 
 void SocketClient::Stop()
@@ -72,6 +84,7 @@ void SocketClient::Stop()
 }
 
 void SocketClient::RecThread::Process() {
+	Log(LOG_INFO, __FUNCTION__ " started");
 	if (m_Client->m_Socket.IsValid())
 	{
 		std::vector<char> data;
@@ -91,8 +104,8 @@ void SocketClient::RecThread::Process() {
 			}
 			if (data.size() >= *dataSize) {
 				Command* cmd = Command::Create(data);
-				if (cmd != NULL && m_Client->m_Dispatcher != nullptr) {
-					m_Client->m_Dispatcher->Dispatch(*cmd, m_Client);
+				if (cmd != NULL && m_Client->GetDispatcher() != nullptr) {
+					m_Client->GetDispatcher()->Dispatch(*cmd, m_Client);
 				}
 			}
 		}
@@ -101,9 +114,11 @@ void SocketClient::RecThread::Process() {
 	{
 		Log(LOG_ERR, "RecThread - invalid Socket");
 	}
+	Log(LOG_INFO, __FUNCTION__ " stopped");
 }
 
 void SocketClient::SendThread::Process() {
+	Log(LOG_INFO, __FUNCTION__ " started");
 	thread::LockGuard<thread::Condition> cmdLock(m_Client->m_CommandWait);
 	while (!m_Stop)
 	{
@@ -127,4 +142,5 @@ void SocketClient::SendThread::Process() {
 			}
 		}
 	}
+	Log(LOG_INFO, __FUNCTION__ " stopped");
 }

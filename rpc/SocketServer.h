@@ -1,10 +1,12 @@
 #ifndef SOCKETLISTENER_H_
 #define SOCKETLISTENER_H_
 
-#include "../thread/Thread.h"
+#include "../thread/ThreadPool.h"
 
 #include "Command.h"
 #include "CommandDispatcher.h"
+
+class SocketClient;
 
 class SocketServer : public thread::Thread {
 public:
@@ -20,6 +22,7 @@ private:
 
 	int m_Port;
 	CommandDispatcher* m_Dispatcher;
+	thread::ThreadPool<SocketClient> m_Pool;
 };
 
 #endif /* SOCKETLISTENER_H_ */

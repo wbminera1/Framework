@@ -56,8 +56,8 @@ private:
 class Dispatched : public ICommandHandler
 {
 public:
-	Dispatched(CommandDispatcher* _dispatcher)
-		: m_Dispatcher(_dispatcher)
+	Dispatched(CommandDispatcher* dispatcher)
+		: m_Dispatcher(dispatcher)
 	{
 		if (m_Dispatcher != nullptr) {
 			m_Dispatcher->AddHandler(this);
@@ -71,7 +71,24 @@ public:
 		}
 	}
 
-protected:
+	CommandDispatcher* GetDispatcher()
+	{
+		return m_Dispatcher;
+	}
+
+	void SetDispatcher(CommandDispatcher* dispatcher)
+	{
+		if (m_Dispatcher != nullptr) {
+			m_Dispatcher->DelHandler(this);
+		}
+		m_Dispatcher = dispatcher;
+		if (m_Dispatcher != nullptr) {
+			m_Dispatcher->AddHandler(this);
+		}
+	}
+
+private:
+
 	CommandDispatcher* m_Dispatcher;
 };
 

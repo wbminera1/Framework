@@ -46,7 +46,7 @@ class ThreadPool
 			}
 		}
 	
-		T* Create()
+		T* Get()
 		{
 			Log(LOG_INFO, __FUNCTION__);
 			LockGuard<Mutex> mutexLock(m_ThreadsLock);
@@ -55,8 +55,17 @@ class ThreadPool
 				T* thr = m_StoppedThreads.back();
 				m_StoppedThreads.pop_back();
 				m_StartingThreads.push_back(thr);
-				thr->Create();
 				return thr;
+			}
+			return nullptr;
+		}
+
+		T* Create()
+		{
+			Log(LOG_INFO, __FUNCTION__);
+			T* thr = Get();
+			if (thr != nullptr) {
+				thr->Create();
 			}
 			return nullptr;
 		}

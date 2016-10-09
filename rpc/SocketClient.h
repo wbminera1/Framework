@@ -16,24 +16,27 @@
 class SocketClient : public Dispatched, public thread::Thread
 {
 public:
-	SocketClient(sockets::Socket& sock, const sockets::SocketAddress& addr, CommandDispatcher* dispatcher);
-	SocketClient(const sockets::SocketAddress& addr, CommandDispatcher* dispatcher);
+	SocketClient();
+	//SocketClient(sockets::Socket& sock, const sockets::SocketAddress& addr, CommandDispatcher* dispatcher);
+	//SocketClient(const sockets::SocketAddress& addr, CommandDispatcher* dispatcher);
 	virtual ~SocketClient();
 
+	void SetConnection(sockets::Socket& sock, const sockets::SocketAddress& addr, CommandDispatcher* dispatcher);
+	void SetAddr(const sockets::SocketAddress& addr, CommandDispatcher* dispatcher);
 	virtual bool Handle(const Command& cmd, ICommandHandler* source);
 
-	bool Start();
-	void Stop();
+	virtual void Stop();
 
 private:
 	
-	virtual void Process() { Start(); }
+	virtual void Process();
 
 	class RecThread : public thread::Thread
 	{
 	public:
 		RecThread(SocketClient* client)
-			: m_Client(client)
+			: Thread(__FUNCTION__)
+			, m_Client(client)
 		{
 			
 		}
@@ -45,7 +48,8 @@ private:
 	{
 	public:
 		SendThread(SocketClient* client)
-			: m_Client(client)
+			: Thread(__FUNCTION__)
+			, m_Client(client)
 		{
 
 		}
