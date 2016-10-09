@@ -1,7 +1,9 @@
 #ifndef THREADPOOL_H_
 #define THREADPOOL_H_
 #include <vector>
+#include "../common/Log_Assert.h"
 #include "Thread.h"
+#include "Mutex.h"
 
 namespace thread
 {
@@ -13,61 +15,129 @@ class ThreadPool
 
 		ThreadPool(size_t size)
 	    {
-	        m_Threads.reserve(size);
+	        m_StoppedThreads.reserve(size);
+			m_StartingThreads.reserve(size);
+			m_StartedThreads.reserve(size);
 			for (size_t i = 0; i < size; ++i)
 			{
 				T* threadPtr = new T();
 				threadPtr->SetOnStart(ThreadOnStart, this);
 				threadPtr->SetOnStop(ThreadOnStop, this);
-				m_Threads.push_back(threadPtr);
+				m_StoppedThreads.push_back(threadPtr);
 			}
 		}
 	
 	    virtual ~ThreadPool()
 	    {
-			Stop();
-			Sleep(1000);
-			Join();
-			for (size_t i = 0; i < m_Threads.size(); ++i)
+			Log(LOG_INFO, __FUNCTION__);
+			StopAll();
+			WaitAll();
+			JoinAll();
 			{
-				delete m_Threads[i];
-				m_Threads[i] = nullptr;
+				LockGuard<Mutex> mutexLock(m_ThreadsLock);
+				Log_Assert(LOG_ERR, m_StoppedThreads.size() == m_StoppedThreads.capacity());
+				for (size_t i = 0; i < m_StoppedThreads.size(); ++i)
+				{
+					delete m_StoppedThreads[i];
+					m_StoppedThreads[i] = nullptr;
+				}
+				Log_Assert(LOG_ERR, m_StartingThreads.size() == 0);
+				Log_Assert(LOG_ERR, m_StartedThreads.size() == 0);
 			}
 		}
 	
-		void Create()
+		T* Create()
 		{
-			for (size_t i = 0; i < m_Threads.size(); ++i)
+			Log(LOG_INFO, __FUNCTION__);
+			LockGuard<Mutex> mutexLock(m_ThreadsLock);
+			if (m_StoppedThreads.size() > 0)
 			{
-				m_Threads[i]->Create();
+				T* thr = m_StoppedThreads.back();
+				m_StoppedThreads.pop_back();
+				m_StartingThreads.push_back(thr);
+				thr->Create();
+				return thr;
 			}
+			return nullptr;
 		}
-		
-		void Join()
+
+		void WaitAll()
 		{
-			for (size_t i = 0; i < m_Threads.size(); ++i)
+			Log(LOG_INFO, __FUNCTION__);
+			while (true)
 			{
-				m_Threads[i]->Join();
+				{
+					LockGuard<Mutex> mutexLock(m_ThreadsLock);
+					if (m_StoppedThreads.size() == m_StoppedThreads.capacity())
+					{
+						return;
+					}
+				}
+				Sleep(100);
 			}
 		}
 
-		void Stop()
+		void JoinAll()
 		{
-			for (size_t i = 0; i < m_Threads.size(); ++i)
+			Log(LOG_INFO, __FUNCTION__);
+			LockGuard<Mutex> mutexLock(m_ThreadsLock);
+			for (size_t i = 0; i < m_StoppedThreads.size(); ++i)
 			{
-				m_Threads[i]->Stop();
+				m_StoppedThreads[i]->Join();
 			}
 		}
 
+		void StopAll()
+		{
+			Log(LOG_INFO, __FUNCTION__);
+			LockGuard<Mutex> mutexLock(m_ThreadsLock);
+			for (size_t i = 0; i < m_StartedThreads.size(); ++i)
+			{
+				m_StartedThreads[i]->Stop();
+			}
+		}
+/*
 	    T* Get(size_t idx)
 	    {
-			return m_Threads[i];
+			return m_StoppedThreads[i];
 	    }
-	
-		virtual void OnStart(Thread* thread) { }
-		virtual void OnStop(Thread* thread) { }
+*/
+private:
 
-	private:
+		virtual void OnStart(Thread* thread) 
+		{
+			Log(LOG_INFO, "OnStart %lx", thread);
+			LockGuard<Mutex> mutexLock(m_ThreadsLock);
+			for (size_t i = 0; i < m_StartingThreads.size(); ++i)
+			{
+				T* threadPtr = m_StartingThreads[i];
+				if (threadPtr == thread) 
+				{
+					m_StartingThreads.erase(m_StartingThreads.begin() + i);
+					m_StartedThreads.push_back(threadPtr);
+					return;
+				}
+			}
+			Log(LOG_ERR, __FUNCTION__ " thread not found");
+		}
+
+		virtual void OnStop(Thread* thread) 
+		{ 
+			Log(LOG_INFO, "OnStop %lx", thread);
+			LockGuard<Mutex> mutexLock(m_ThreadsLock);
+			for (size_t i = 0; i < m_StartedThreads.size(); ++i)
+			{
+				T* threadPtr = m_StartedThreads[i];
+				if (threadPtr == thread)
+				{
+					m_StartedThreads.erase(m_StartedThreads.begin() + i);
+					m_StoppedThreads.push_back(threadPtr);
+					return;
+				}
+			}
+			Log(LOG_ERR, __FUNCTION__ " thread not found");
+		}
+
 		static void ThreadOnStart(Thread::ThreadEventArgs* arg)
 		{
 			if (arg != nullptr && arg->m_DataPtr != nullptr)
@@ -86,7 +156,10 @@ class ThreadPool
 			}
 		}
 
-	    std::vector<T*> m_Threads;
+		Mutex m_ThreadsLock;
+	    std::vector<T*> m_StoppedThreads;
+		std::vector<T*> m_StartingThreads;
+		std::vector<T*> m_StartedThreads;
 };
 
 } // namespace thread

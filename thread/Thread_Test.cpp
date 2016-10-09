@@ -88,26 +88,22 @@ void TestPool()
 	{
 		public:
 			TestThreadPool(size_t size) : ThreadPool(size) {}
-			virtual void OnStart(thread::Thread* thread)
-			{
-				Log(LOG_INFO, "OnStart %lx", thread);
-			}
-
-			virtual void OnStop(thread::Thread* thread)
-			{
-				Log(LOG_INFO, "OnStop %lx", thread);
-			}
 	};
 
-	TestThreadPool tp(10);
-	Log(LOG_INFO, "ThreadPool creating");
-	tp.Create();
-	Log(LOG_INFO, "ThreadPool sleeping");
-	Sleep(1000);
-	Log(LOG_INFO, "ThreadPool stopping");
-	tp.Stop();
-	Log(LOG_INFO, "ThreadPool joining");
-	tp.Join();
+	{
+		TestThreadPool tp(10);
+		Log(LOG_INFO, "ThreadPool creating");
+		while (true)
+		{
+			TestThread* thr = tp.Create();
+			if (thr == nullptr)
+			{
+				break;
+			}
+		}
+		Log(LOG_INFO, "ThreadPool sleeping");
+		Sleep(1000);
+	}
 	Log(LOG_INFO, "ThreadPool finished");
 }
 

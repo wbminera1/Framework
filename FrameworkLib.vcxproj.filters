@@ -60,6 +60,7 @@
     <ClCompile Include="rpc\CommandDispatcher.cpp">
       <Filter>rpc</Filter>
     </ClCompile>
+    <ClCompile Include="common\Log_Assert.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common\Log.h">
@@ -109,6 +110,9 @@
     </ClInclude>
     <ClInclude Include="rpc\CommandSendBlocking.h">
       <Filter>rpc</Filter>
+    </ClInclude>
+    <ClInclude Include="common\Log_Assert.h">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
