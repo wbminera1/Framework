@@ -37,13 +37,26 @@ public:
 		}
 	}
 
-	bool Dispatch(const Command& cmd, ICommandHandler* source)
+	bool DispatchFrom(const Command& cmd, ICommandHandler* source)
 	{
 		for(size_t i = 0; i < m_Handlers.size(); ++i) {
 			if (m_Handlers[i] != source) {
 				if (m_Handlers[i]->Handle(cmd, source)) {
 					return true;
 				}
+			}
+		}
+		return false;
+	}
+
+	bool DispatchTo(const Command& cmd, ICommandHandler* source)
+	{
+		for (size_t i = 0; i < m_Handlers.size(); ++i) {
+			if (m_Handlers[i] == source) {
+				if (m_Handlers[i]->Handle(cmd, source)) {
+					return true;
+				}
+				break;
 			}
 		}
 		return false;

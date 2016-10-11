@@ -39,6 +39,7 @@ bool SocketServer::Start()
 				{
 					sc->SetConnection(connectedS, connectedA, m_Dispatcher);
 					sc->Create();
+					sc->WaitForStart();
 				}
 				Log(LOG_WARNING, "SocketServer - client spawned");
 			}

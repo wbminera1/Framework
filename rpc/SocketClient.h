@@ -9,6 +9,7 @@
 #include "../thread/Thread.h"
 #include "../thread/Mutex.h"
 #include "../thread/Condition.h"
+#include "../thread/Barrier.h"
 
 #include "Command.h"
 #include "CommandDispatcher.h"
@@ -17,14 +18,13 @@ class SocketClient : public Dispatched, public thread::Thread
 {
 public:
 	SocketClient();
-	//SocketClient(sockets::Socket& sock, const sockets::SocketAddress& addr, CommandDispatcher* dispatcher);
-	//SocketClient(const sockets::SocketAddress& addr, CommandDispatcher* dispatcher);
 	virtual ~SocketClient();
 
 	void SetConnection(sockets::Socket& sock, const sockets::SocketAddress& addr, CommandDispatcher* dispatcher);
 	void SetAddr(const sockets::SocketAddress& addr, CommandDispatcher* dispatcher);
 	virtual bool Handle(const Command& cmd, ICommandHandler* source);
 
+	void WaitForStart();
 	virtual void Stop();
 
 private:
@@ -66,6 +66,7 @@ private:
 
 	thread::Mutex m_CommandMutex;
 	thread::Condition m_CommandWait;
+	thread::Barrier m_StartWait;
 	std::vector<char> m_CommandBuffer;
 };
 

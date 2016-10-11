@@ -8,12 +8,15 @@ SocketClient::SocketClient()
 	, m_Addr(0)
 	, m_RecThread(this)
 	, m_SendThread(this)
+	, m_StartWait(4)
 {
 	m_CommandBuffer.reserve(1024);
+	Log(LOG_WARNING, __FUNCTION__);
 }
 
 SocketClient::~SocketClient()
 {
+	Log(LOG_WARNING, __FUNCTION__ );
 }
 
 void SocketClient::SetConnection(sockets::Socket& sock, const sockets::SocketAddress& addr, CommandDispatcher* dispatcher)
@@ -59,7 +62,17 @@ void SocketClient::Process()
 		m_RecThread.Create();
 		m_SendThread.Create();
 
+		m_StartWait.Wait();
+
 		Thread::Process();
+
+		m_RecThread.Stop();
+		m_SendThread.Stop();
+
+		{
+			thread::LockGuard<thread::Condition> cmdLock(m_CommandWait);
+			m_CommandWait.Signal();
+		}
 
 		m_RecThread.Join();
 		m_SendThread.Join();
@@ -71,13 +84,16 @@ void SocketClient::Process()
 	Log(LOG_INFO, __FUNCTION__ " stopped");
 }
 
+void SocketClient::WaitForStart()
+{
+	m_StartWait.Wait();
+}
+
 void SocketClient::Stop()
 {
 	Log(LOG_INFO, __FUNCTION__ " started");
 
-	m_RecThread.Join();
-	m_SendThread.Join();
-
+	Thread::Stop();
 	m_Socket.Close();
 
 	Log(LOG_INFO, __FUNCTION__ " stopped");
@@ -88,11 +104,14 @@ void SocketClient::RecThread::Process() {
 	if (m_Client->m_Socket.IsValid())
 	{
 		std::vector<char> data;
+		m_Client->m_StartWait.Wait();
+
 		while (!m_Stop)
 		{
 			auto res = m_Client->m_Socket.RecV(data, Command::MAX_COMMAND_SIZE);
 			if (!res) {
 				Log(LOG_ERR, "RecThread - RecV function failed with error: %d", WSAGetLastError());
+				m_Client->Stop();
 				break;
 			}
 			Log(LOG_INFO, "RecThread - RecV %d bytes", data.size());
@@ -105,7 +124,7 @@ void SocketClient::RecThread::Process() {
 			if (data.size() >= *dataSize) {
 				Command* cmd = Command::Create(data);
 				if (cmd != NULL && m_Client->GetDispatcher() != nullptr) {
-					m_Client->GetDispatcher()->Dispatch(*cmd, m_Client);
+					m_Client->GetDispatcher()->DispatchFrom(*cmd, m_Client);
 				}
 			}
 		}
@@ -120,6 +139,7 @@ void SocketClient::RecThread::Process() {
 void SocketClient::SendThread::Process() {
 	Log(LOG_INFO, __FUNCTION__ " started");
 	thread::LockGuard<thread::Condition> cmdLock(m_Client->m_CommandWait);
+	m_Client->m_StartWait.Wait();
 	while (!m_Stop)
 	{
 		Log(LOG_INFO, __FUNCTION__ " on wait");
@@ -131,6 +151,7 @@ void SocketClient::SendThread::Process() {
 				auto res = m_Client->m_Socket.Send(m_Client->m_CommandBuffer);
 				if (res == SOCKET_ERROR) {
 					Log(LOG_ERR, __FUNCTION__ "send function failed with error: %d", WSAGetLastError());
+					m_Client->Stop();
 					break;
 				}
 				m_Client->m_CommandBuffer.clear();
@@ -138,7 +159,7 @@ void SocketClient::SendThread::Process() {
 			}
 			else
 			{
-				Log(LOG_ERR, __FUNCTION__ " triggered, but commandBuffer is empty");
+				Log(LOG_WARNING, __FUNCTION__ " triggered, but commandBuffer is empty");
 			}
 		}
 	}

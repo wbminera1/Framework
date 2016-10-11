@@ -19,7 +19,7 @@ public:
 
 	}
 
-	typedef bool (TestCommandProcessor::*ReceiveCommandFn)(const Command& cmd);
+	typedef bool (TestCommandProcessor::*ReceiveCommandFn)(const Command& cmd, ICommandHandler* source);
 
 	virtual bool Handle(const Command& cmd, ICommandHandler* source)
 	{
@@ -40,28 +40,28 @@ public:
 		*/
 		ReceiveCommandFn fpa[cLast] = { nullptr, nullptr, nullptr, &TestCommandProcessor::ReceiveCommandConnect, nullptr, nullptr, nullptr, nullptr };
 		if (fpa[cmd.m_Command] != nullptr) {
-			return (this->*fpa[cmd.m_Command])(cmd);
+			return (this->*fpa[cmd.m_Command])(cmd, source);
 		}
-		return ReceiveCommand(cmd);
+		return ReceiveCommand(cmd, source);
 	}
 
-	bool ReceiveCommand(const Command& cmd)
+	bool ReceiveCommand(const Command& cmd, ICommandHandler* source)
 	{
 		Log(LOG_INFO, __FUNCTION__ " Command %s not handled", ToString(cmd.m_Command));
 		return false;
 	}
 
-	bool ReceiveCommandConnect(const Command& cmd)
+	bool ReceiveCommandConnect(const Command& cmd, ICommandHandler* source)
 	{
 		Log(LOG_INFO, __FUNCTION__ " Command %s", ToString(cmd.m_Command));
 		const CommandConnect& cmdConnect((const CommandConnect&)cmd);
 		Log(LOG_INFO, __FUNCTION__ " Version %d", cmdConnect.m_Version);
 		CommandResponse cmdResponse(cmd, cmdConnect.m_Version == Command::VERSION ? sOk : sFail);
-		GetDispatcher()->Dispatch(cmdResponse, this);
+		GetDispatcher()->DispatchTo(cmdResponse, source);
 		return false;
 	}
 
-	bool ReceiveCommandDisconnect(const Command& cmd)
+	bool ReceiveCommandDisconnect(const Command& cmd, ICommandHandler* source)
 	{
 		Log(LOG_INFO, __FUNCTION__ " Command %s not handled", ToString(cmd.m_Command));
 		return false;
