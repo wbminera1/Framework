@@ -19,7 +19,7 @@ struct SocketAddress
 		sockaddr_in6 ip6;
 	} m_addr;
 	
-	SocketAddress(int af) : m_af(af) 
+	SocketAddress(int af = AF_UNSPEC) : m_af(af)
 	{  
 		memset(&m_addr, 0, sizeof(m_addr));
 		if (m_af == AF_INET) {

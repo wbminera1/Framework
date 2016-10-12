@@ -37,7 +37,8 @@ bool SocketServer::Start()
 				SocketClient* sc = m_Pool.Get();
 				if (sc != nullptr)
 				{
-					sc->SetConnection(connectedS, connectedA, m_Dispatcher);
+					sc->SetConnection(connectedS, connectedA);
+					sc->SetDispatcher(m_Dispatcher);
 					sc->Create();
 					sc->WaitForStart();
 				}

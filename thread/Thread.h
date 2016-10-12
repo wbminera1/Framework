@@ -95,6 +95,31 @@ protected:
 
 };
 
+class ThreadEventListener
+{
+public:
+	virtual void OnStart(Thread* thread) = 0;
+	virtual void OnStop(Thread* thread) = 0;
+
+	static void ThreadOnStart(Thread::ThreadEventArgs* arg)
+	{
+		if (arg != nullptr && arg->m_DataPtr != nullptr)
+		{
+			ThreadEventListener* self = static_cast<ThreadEventListener*>(arg->m_DataPtr);
+			self->OnStart(arg->m_Thread);
+		}
+	}
+
+	static void ThreadOnStop(Thread::ThreadEventArgs* arg)
+	{
+		if (arg != nullptr && arg->m_DataPtr != nullptr)
+		{
+			ThreadEventListener* self = static_cast<ThreadEventListener*>(arg->m_DataPtr);
+			self->OnStop(arg->m_Thread);
+		}
+	}
+};
+
 } // namespace thread
 
 #endif // THREAD_H_

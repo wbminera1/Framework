@@ -14,18 +14,46 @@
 #include "Command.h"
 #include "CommandDispatcher.h"
 
-class SocketClient : public Dispatched, public thread::Thread
+class SocketClientBase : public thread::Thread
+{
+public:
+	SocketClientBase() : Thread(__FUNCTION__) { }
+	virtual ~SocketClientBase() {}
+
+	void SetConnection(sockets::Socket& sock, const sockets::SocketAddress& addr);
+	void SetAddr(const sockets::SocketAddress& addr);
+	
+	sockets::Socket& GetSocket() { return m_Socket; }
+
+	virtual void Stop();
+
+protected:
+
+	virtual void Process();
+
+	sockets::Socket m_Socket;
+	sockets::SocketAddress m_Addr;
+
+};
+
+template <class TRecThread, class TSendThread>
+class SocketClientThreaded : public SocketClientBase
+{
+public:
+protected:
+	TRecThread  m_RecThread;
+	TSendThread m_SendThread;
+};
+
+class SocketClient : public Dispatched, public SocketClientBase
 {
 public:
 	SocketClient();
 	virtual ~SocketClient();
 
-	void SetConnection(sockets::Socket& sock, const sockets::SocketAddress& addr, CommandDispatcher* dispatcher);
-	void SetAddr(const sockets::SocketAddress& addr, CommandDispatcher* dispatcher);
 	virtual bool Handle(const Command& cmd, ICommandHandler* source);
 
 	void WaitForStart();
-	virtual void Stop();
 
 private:
 	
@@ -51,23 +79,25 @@ private:
 			: Thread(__FUNCTION__)
 			, m_Client(client)
 		{
-
+			m_CommandBuffer.reserve(1024);
 		}
+
+		void Send(const Command& cmd);
+
+	protected:
 		virtual void Process();
 
 		SocketClient* m_Client;
-	};
 
-	sockets::Socket m_Socket;
-	sockets::SocketAddress m_Addr;
+		thread::Mutex m_CommandMutex;
+		thread::Condition m_CommandWait;
+		std::vector<char> m_CommandBuffer;
+	};
 
 	RecThread m_RecThread;
 	SendThread m_SendThread;
 
-	thread::Mutex m_CommandMutex;
-	thread::Condition m_CommandWait;
 	thread::Barrier m_StartWait;
-	std::vector<char> m_CommandBuffer;
 };
 
 #endif // __SOCKETCLIENT_H_

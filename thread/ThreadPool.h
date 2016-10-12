@@ -9,7 +9,7 @@ namespace thread
 {
 
 template <class T>
-class ThreadPool
+class ThreadPool : public ThreadEventListener
 {
 	public:
 
@@ -145,24 +145,6 @@ private:
 				}
 			}
 			Log(LOG_ERR, __FUNCTION__ " thread not found");
-		}
-
-		static void ThreadOnStart(Thread::ThreadEventArgs* arg)
-		{
-			if (arg != nullptr && arg->m_DataPtr != nullptr)
-			{
-				ThreadPool* self = static_cast<ThreadPool*>(arg->m_DataPtr);
-				self->OnStart(arg->m_Thread);
-			}
-		}
-
-		static void ThreadOnStop(Thread::ThreadEventArgs* arg)
-		{
-			if (arg != nullptr && arg->m_DataPtr != nullptr)
-			{
-				ThreadPool* self = static_cast<ThreadPool*>(arg->m_DataPtr);
-				self->OnStop(arg->m_Thread);
-			}
 		}
 
 		Mutex m_ThreadsLock;
