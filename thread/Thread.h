@@ -7,27 +7,18 @@
 namespace thread
 {
 
-class Thread
+class ThreadBase
 {
     public:
 
-		struct ThreadEventArgs
-		{
-			ThreadEventArgs() : m_Thread(nullptr), m_DataPtr(nullptr) { }
-			Thread* m_Thread;
-			void*   m_DataPtr;
-		};
-
-		typedef void(*ThreadEventFn)(ThreadEventArgs* arg);
-
-        Thread(const char* name = nullptr) 
+		ThreadBase(const char* name = nullptr)
 			: m_Stop(false)
 		{ 
 			memset(&m_Thread, 0, sizeof(m_Thread));
 			SetName(name);
 		}
 
-        virtual ~Thread() { }
+        virtual ~ThreadBase() { }
 
 		void SetName(const char* name)
 		{
@@ -42,12 +33,12 @@ class Thread
             pthread_attr_t attr;
             pthread_attr_init(&attr);
             pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-            int res = pthread_create(&m_Thread, &attr, &Thread::Start, (void *) this);
+            int res = pthread_create(&m_Thread, &attr, &ThreadBase::Start, (void *) this);
             pthread_attr_destroy(&attr);
             return res;
         }
 
-        int Join()
+        virtual int Join()
         {
             void* status;
             int res = pthread_join(m_Thread, &status);
@@ -59,39 +50,68 @@ class Thread
             m_Stop = true;
         }
 
-		void SetOnStart(ThreadEventFn onStart, void* dataPtr = nullptr)
-		{
-			m_OnStart.m_Fn = onStart;
-			m_OnStart.m_Args.m_Thread = this;
-			m_OnStart.m_Args.m_DataPtr = dataPtr;
-		}
-
-		void SetOnStop(ThreadEventFn onStop, void* dataPtr = nullptr)
-		{
-			m_OnStop.m_Fn = onStop;
-			m_OnStop.m_Args.m_Thread = this;
-			m_OnStop.m_Args.m_DataPtr = dataPtr;
-		}
-
 protected:
-		virtual void Process();
-
-		struct ThreadEvent
-		{
-			ThreadEvent() : m_Fn(nullptr) { }
-			ThreadEventArgs m_Args;
-			ThreadEventFn   m_Fn;
-		};
+		virtual void OnCreate();
+		virtual void Process() = 0;
+		virtual void OnCleanup();
 
         volatile bool m_Stop;
 
-		ThreadEvent m_OnStart;
-		ThreadEvent m_OnStop;
         pthread_t m_Thread;
 		std::string m_Name;
 
 		static void* Start(void* ptr);
-		static void Cleanup(void* ptr);
+
+};
+
+class Thread : public ThreadBase
+{
+public:
+
+	struct ThreadEventArgs
+	{
+		ThreadEventArgs() : m_Thread(nullptr), m_DataPtr(nullptr) { }
+		Thread* m_Thread;
+		void*   m_DataPtr;
+	};
+
+	typedef void(*ThreadEventFn)(ThreadEventArgs* arg);
+
+	Thread(const char* name = nullptr) : ThreadBase(name) { }
+	virtual ~Thread() {}
+
+	void SetOnStart(ThreadEventFn onStart, void* dataPtr = nullptr)
+	{
+		m_OnStart.m_Fn = onStart;
+		m_OnStart.m_Args.m_Thread = this;
+		m_OnStart.m_Args.m_DataPtr = dataPtr;
+	}
+
+	void SetOnStop(ThreadEventFn onStop, void* dataPtr = nullptr)
+	{
+		m_OnStop.m_Fn = onStop;
+		m_OnStop.m_Args.m_Thread = this;
+		m_OnStop.m_Args.m_DataPtr = dataPtr;
+	}
+
+protected:
+	virtual void OnCreate();
+	virtual void Process();
+	virtual void OnCleanup();
+
+	virtual void ProcessManaged();
+
+	struct ThreadEvent
+	{
+		ThreadEvent() : m_Fn(nullptr) { }
+		ThreadEventArgs m_Args;
+		ThreadEventFn   m_Fn;
+	};
+
+	ThreadEvent m_OnStart;
+	ThreadEvent m_OnStop;
+
+	static void Cleanup(void* ptr);
 
 };
 

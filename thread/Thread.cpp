@@ -31,7 +31,36 @@ namespace thread
 #pragma warning(pop)
 	}
 
+	void ThreadBase::OnCreate()
+	{
+		if (m_Name.size() > 0)
+		{
+			SetThreadName(-1, m_Name.c_str());
+		}
+		Process();
+	}
+
+	void ThreadBase::OnCleanup()
+	{
+
+	}
+
+	void* ThreadBase::Start(void* ptr)
+	{
+		ThreadBase* self = static_cast<ThreadBase*>(ptr);
+		self->OnCreate();
+		return NULL;
+	}
+
 void Thread::Process()
+{
+	m_Stop = false;
+	pthread_cleanup_push(Cleanup, this);
+	ProcessManaged();
+	pthread_cleanup_pop(1);
+}
+
+void Thread::ProcessManaged()
 {
 	while (!m_Stop)
 	{
@@ -39,22 +68,17 @@ void Thread::Process()
 	}
 }
 
-void* Thread::Start(void* ptr)
+void Thread::OnCreate()
 {
-	Thread* self = static_cast<Thread*>(ptr);
-	if (self->m_Name.size() > 0)
-	{
-		SetThreadName(-1, self->m_Name.c_str());
+	ThreadBase::OnCreate();
+	if (m_OnStart.m_Fn != nullptr) {
+		(*m_OnStart.m_Fn)(&m_OnStart.m_Args);
 	}
-	pthread_cleanup_push(Cleanup, ptr);
-	self->m_Stop = false;
-	if (self->m_OnStart.m_Fn != nullptr) {
-		(*self->m_OnStart.m_Fn)(&self->m_OnStart.m_Args);
-	}
-	self->Process();
-	self->m_Stop = true;
-	pthread_cleanup_pop(1);
-	return NULL;
+}
+
+void Thread::OnCleanup()
+{
+
 }
 
 void Thread::Cleanup(void* ptr)

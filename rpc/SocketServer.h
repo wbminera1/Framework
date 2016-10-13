@@ -1,28 +1,30 @@
 #ifndef SOCKETLISTENER_H_
 #define SOCKETLISTENER_H_
 
-#include "../thread/ThreadPool.h"
-
-#include "Command.h"
+#include "../sockets/SocketServerBase.h"
 #include "CommandDispatcher.h"
 
-class SocketClient;
-
-class SocketServer : public thread::Thread {
+template <class TClient>
+class SocketServerRPC : public SocketServerBase<TClient>
+{
 public:
-	explicit SocketServer(int port, CommandDispatcher* dispatcher);
-	virtual ~SocketServer();
+	explicit SocketServerRPC(int maxConnections, int port, CommandDispatcher* dispatcher)
+		: SocketServerBase(maxConnections, port)
+		, m_Dispatcher(dispatcher)
+	{ }
 
-	bool Start();
+	virtual ~SocketServerRPC() { }
 
-private:
-	static const int MAX_CONNECTIONS = 16;
+protected:
 
-	virtual void Process() { Start(); }
+	virtual void OnConnection(TClient* client)
+	{
+		client->SetDispatcher(m_Dispatcher);
+		client->Create();
+		client->WaitForStart();
+	}
 
-	int m_Port;
 	CommandDispatcher* m_Dispatcher;
-	thread::ThreadPool<SocketClient> m_Pool;
 };
 
 #endif /* SOCKETLISTENER_H_ */

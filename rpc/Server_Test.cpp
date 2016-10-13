@@ -84,7 +84,7 @@ int Server_Test()
 	CommandDispatcher dispatcher;
 	TestCommandProcessor processor(&dispatcher);
 
-	SocketServer sl(9999, &dispatcher);
+	SocketServerRPC<SocketClient> sl(16, 9999, &dispatcher);
 	sl.Create();
 
 	while (true)

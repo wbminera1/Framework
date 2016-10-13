@@ -29,6 +29,7 @@
     <ClCompile Include="rpc\SocketServer.cpp" />
     <ClCompile Include="sockets\Socket.cpp" />
     <ClCompile Include="sockets\SocketAddress.cpp" />
+    <ClCompile Include="sockets\SocketServerBase.cpp" />
     <ClCompile Include="thread\Barrier.cpp" />
     <ClCompile Include="thread\Condition.cpp" />
     <ClCompile Include="thread\Misc.cpp" />
@@ -49,6 +50,7 @@
     <ClInclude Include="rpc\SocketServer.h" />
     <ClInclude Include="sockets\Socket.h" />
     <ClInclude Include="sockets\SocketAddress.h" />
+    <ClInclude Include="sockets\SocketServerBase.h" />
     <ClInclude Include="thread\Barrier.h" />
     <ClInclude Include="thread\Condition.h" />
     <ClInclude Include="thread\Misc.h" />
