@@ -2,7 +2,7 @@
 #include "SocketClient.h"
 
 
-void SocketClientBase::OnCreate()
+void SocketClientBase::OnStart()
 {
 	Log(LOG_DEBUG, __FUNCTION__ " started");
 

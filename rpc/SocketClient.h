@@ -29,7 +29,7 @@ public:
 
 protected:
 
-	virtual void OnCreate();
+	virtual void OnStart();
 	virtual void Process();
 
 	sockets::Socket m_Socket;

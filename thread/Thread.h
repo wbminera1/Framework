@@ -1,72 +1,18 @@
 #ifndef THREAD_H_
 #define THREAD_H_
-#include <string.h>
-#include <string>
-#include <pthread.h>
+#include "ThreadBase.h"
 
 namespace thread
 {
 
-class ThreadBase
-{
-    public:
-
-		ThreadBase(const char* name = nullptr)
-			: m_Stop(false)
-		{ 
-			memset(&m_Thread, 0, sizeof(m_Thread));
-			SetName(name);
-		}
-
-        virtual ~ThreadBase() { }
-
-		void SetName(const char* name)
-		{
-			if (name != nullptr)
-			{
-				m_Name = name;
-			}
-		}
-
-		virtual int Create()
-        {
-            pthread_attr_t attr;
-            pthread_attr_init(&attr);
-            pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-            int res = pthread_create(&m_Thread, &attr, &ThreadBase::Start, (void *) this);
-            pthread_attr_destroy(&attr);
-            return res;
-        }
-
-        virtual int Join()
-        {
-            void* status;
-            int res = pthread_join(m_Thread, &status);
-            return res;
-        }
-
-		virtual void Stop()
-        {
-            m_Stop = true;
-        }
-
-protected:
-		virtual void OnCreate();
-		virtual void Process() = 0;
-		virtual void OnCleanup();
-
-        volatile bool m_Stop;
-
-        pthread_t m_Thread;
-		std::string m_Name;
-
-		static void* Start(void* ptr);
-
-};
-
 class Thread : public ThreadBase
 {
 public:
+
+	static void Sleep(unsigned long milliseconds);
+
+	Thread(const char* name = nullptr) : ThreadBase(name) { }
+	virtual ~Thread() {}
 
 	struct ThreadEventArgs
 	{
@@ -76,9 +22,6 @@ public:
 	};
 
 	typedef void(*ThreadEventFn)(ThreadEventArgs* arg);
-
-	Thread(const char* name = nullptr) : ThreadBase(name) { }
-	virtual ~Thread() {}
 
 	void SetOnStart(ThreadEventFn onStart, void* dataPtr = nullptr)
 	{
@@ -95,11 +38,9 @@ public:
 	}
 
 protected:
-	virtual void OnCreate();
+	virtual void OnStart();
 	virtual void Process();
-	virtual void OnCleanup();
-
-	virtual void ProcessManaged();
+	virtual void OnStop();
 
 	struct ThreadEvent
 	{
@@ -110,23 +51,37 @@ protected:
 
 	ThreadEvent m_OnStart;
 	ThreadEvent m_OnStop;
+};
 
+class ThreadCancelable : public Thread
+{
+public:
+	virtual int Create();
+
+protected:
+	static void* StartCancelable(void* ptr);
 	static void Cleanup(void* ptr);
-
 };
 
 class ThreadEventListener
 {
 public:
-	virtual void OnStart(Thread* thread) = 0;
-	virtual void OnStop(Thread* thread) = 0;
+
+	void Listen(Thread* thread)
+	{
+		thread->SetOnStart(ThreadOnStart, this);
+		thread->SetOnStop(ThreadOnStop, this);
+	}
+
+	virtual void OnStartEvent(Thread* thread) = 0;
+	virtual void OnStopEvent(Thread* thread) = 0;
 
 	static void ThreadOnStart(Thread::ThreadEventArgs* arg)
 	{
 		if (arg != nullptr && arg->m_DataPtr != nullptr)
 		{
 			ThreadEventListener* self = static_cast<ThreadEventListener*>(arg->m_DataPtr);
-			self->OnStart(arg->m_Thread);
+			self->OnStartEvent(arg->m_Thread);
 		}
 	}
 
@@ -135,7 +90,7 @@ public:
 		if (arg != nullptr && arg->m_DataPtr != nullptr)
 		{
 			ThreadEventListener* self = static_cast<ThreadEventListener*>(arg->m_DataPtr);
-			self->OnStop(arg->m_Thread);
+			self->OnStopEvent(arg->m_Thread);
 		}
 	}
 };

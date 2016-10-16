@@ -113,7 +113,7 @@ class ThreadPool : public ThreadEventListener
 */
 private:
 
-		virtual void OnStart(Thread* thread) 
+		virtual void OnStartEvent(Thread* thread) 
 		{
 			Log(LOG_INFO, "OnStart %lx", thread);
 			LockGuard<Mutex> mutexLock(m_ThreadsLock);
@@ -130,7 +130,7 @@ private:
 			Log(LOG_ERR, __FUNCTION__ " thread not found");
 		}
 
-		virtual void OnStop(Thread* thread) 
+		virtual void OnStopEvent(Thread* thread) 
 		{ 
 			Log(LOG_INFO, "OnStop %lx", thread);
 			LockGuard<Mutex> mutexLock(m_ThreadsLock);

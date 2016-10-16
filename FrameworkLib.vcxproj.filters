@@ -65,6 +65,9 @@
       <Filter>thread</Filter>
     </ClCompile>
     <ClCompile Include="sockets\SocketServerBase.cpp" />
+    <ClCompile Include="thread\ThreadBase.cpp">
+      <Filter>thread</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common\Log.h">
@@ -123,6 +126,9 @@
     </ClInclude>
     <ClInclude Include="sockets\SocketServerBase.h">
       <Filter>sockets</Filter>
+    </ClInclude>
+    <ClInclude Include="thread\ThreadBase.h">
+      <Filter>thread</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

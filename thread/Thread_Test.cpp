@@ -6,28 +6,151 @@
 #include "ThreadPool.h"
 #include "../common/Log.h"
 
+#include "Catch/single_include/catch.hpp"
 
-void TestThread()
+
+TEST_CASE("ThreadTest", "[thread]")
 {
-	class TestThread : public thread::Thread
+	class TestThreadBase : public thread::ThreadBase
+	{
+	public:
+		TestThreadBase() : ThreadBase(__FUNCTION__)
+		{
+			m_OnStartPassed = 
+			m_OnStopPassed = 
+			m_OnProcessStartedPassed = 
+			m_OnProcessStoppedPassed = false;
+		}
+
+		virtual void OnStart()
+		{
+			m_OnStartPassed = true;
+		}
+
+		virtual void Process()
+		{
+			m_OnProcessStartedPassed = true;
+			while (!m_Stop)
+			{
+				thread::Thread::Sleep(100);
+			}
+			m_OnProcessStoppedPassed = true;
+		}
+
+		virtual void OnStop()
+		{
+			m_OnStopPassed = true;
+		}
+
+		volatile bool m_OnStartPassed;
+		volatile bool m_OnStopPassed;
+		volatile bool m_OnProcessStartedPassed;
+		volatile bool m_OnProcessStoppedPassed;
+	};
+
+	SECTION("ThreadBase")
+	{
+		TestThreadBase th1;
+		th1.SetName("TestThreadBase");
+		REQUIRE((th1.m_OnStartPassed == false && th1.m_OnStopPassed == false && th1.m_OnProcessStartedPassed == false && th1.m_OnProcessStoppedPassed == false) == true);
+		REQUIRE(th1.Create() == 0);
+		thread::Thread::Sleep(200);
+		REQUIRE(th1.GetName() == "TestThreadBase");
+		REQUIRE((th1.m_OnStartPassed == true && th1.m_OnStopPassed == false && th1.m_OnProcessStartedPassed == true && th1.m_OnProcessStoppedPassed == false) == true);
+		th1.Stop();
+		REQUIRE(th1.Join() == 0);
+		REQUIRE((th1.m_OnStartPassed == true && th1.m_OnStopPassed == true && th1.m_OnProcessStartedPassed == true && th1.m_OnProcessStoppedPassed == true) == true);
+	}
+
+	class TestThread : public thread::Thread, public thread::ThreadEventListener
 	{
 	public:
 		TestThread() : Thread(__FUNCTION__)
 		{
+			m_OnStartPassed =
+			m_OnStopPassed =
+			m_OnProcessStartedPassed =
+			m_OnProcessStoppedPassed =
+			m_OnStartEventPassed =
+			m_OnStopEventPassed = false;
 
+			Listen(this);
 		}
-		void Process()
+
+		virtual void OnStart()
 		{
-			Log(LOG_INFO, "Sizeof %d", sizeof(this->m_Thread));
-			Log(LOG_INFO, "Thread %lx", m_Thread);
+			Thread::OnStart();
+			m_OnStartPassed = true;
 		}
+
+		virtual void Process()
+		{
+			m_OnProcessStartedPassed = true;
+			while (!m_Stop)
+			{
+				thread::Thread::Sleep(100);
+			}
+			m_OnProcessStoppedPassed = true;
+		}
+
+		virtual void OnStop()
+		{
+			Thread::OnStop();
+			m_OnStopPassed = true;
+		}
+
+		void OnStartEvent(Thread* thread)
+		{
+			if (thread == this)
+			{
+				m_OnStartEventPassed = true;
+			}
+		}
+
+		void OnStopEvent(Thread* thread)
+		{
+			if (thread == this)
+			{
+				m_OnStopEventPassed = true;
+			}
+		}
+
+		volatile bool m_OnStartPassed;
+		volatile bool m_OnStopPassed;
+		volatile bool m_OnProcessStartedPassed;
+		volatile bool m_OnProcessStoppedPassed;
+		volatile bool m_OnStartEventPassed;
+		volatile bool m_OnStopEventPassed;
 	};
-	TestThread th1, th2;
-	th1.Create();
-	th2.Create();
-	Sleep(100);
-	th1.Join();
-	th2.Join();
+
+	SECTION("Thread")
+	{
+		TestThread th1;
+		th1.SetName("TestThread");
+		REQUIRE(th1.m_OnStartPassed == false);
+		REQUIRE(th1.m_OnStopPassed == false);
+		REQUIRE(th1.m_OnProcessStartedPassed == false);
+		REQUIRE(th1.m_OnProcessStoppedPassed == false);
+		REQUIRE(th1.m_OnStartEventPassed == false);
+		REQUIRE(th1.m_OnStopEventPassed == false);
+		REQUIRE(th1.Create() == 0);
+		thread::Thread::Sleep(200);
+		REQUIRE(th1.GetName() == "TestThread");
+		REQUIRE(th1.m_OnStartPassed == true);
+		REQUIRE(th1.m_OnStopPassed == false);
+		REQUIRE(th1.m_OnProcessStartedPassed == true);
+		REQUIRE(th1.m_OnProcessStoppedPassed == false);
+		REQUIRE(th1.m_OnStartEventPassed == true);
+		REQUIRE(th1.m_OnStopEventPassed == false);
+		th1.Stop();
+		REQUIRE(th1.Join() == 0);
+		REQUIRE(th1.m_OnStartPassed == true);
+		REQUIRE(th1.m_OnStopPassed == true);
+		REQUIRE(th1.m_OnProcessStartedPassed == true);
+		REQUIRE(th1.m_OnProcessStoppedPassed == true);
+		REQUIRE(th1.m_OnStartEventPassed == true);
+		REQUIRE(th1.m_OnStopEventPassed == true);
+	}
 }
 
 void TestMutex()
@@ -117,13 +240,4 @@ void TestPool()
 		Sleep(1000);
 	}
 	Log(LOG_INFO, "ThreadPool finished");
-}
-
-
-int Thread_Test()
-{
-	//TestThread();
-	//TestMutex();
-	TestPool();
-	return 0;
 }

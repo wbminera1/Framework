@@ -36,6 +36,7 @@
     <ClCompile Include="thread\Mutex.cpp" />
     <ClCompile Include="thread\TaskQueue.cpp" />
     <ClCompile Include="thread\Thread.cpp" />
+    <ClCompile Include="thread\ThreadBase.cpp" />
     <ClCompile Include="thread\ThreadPool.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -57,6 +58,7 @@
     <ClInclude Include="thread\Mutex.h" />
     <ClInclude Include="thread\TaskQueue.h" />
     <ClInclude Include="thread\Thread.h" />
+    <ClInclude Include="thread\ThreadBase.h" />
     <ClInclude Include="thread\ThreadPool.h" />
   </ItemGroup>
   <ItemGroup>
@@ -135,7 +137,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;PTW32_STATIC_LIB;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../pthread</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../;../pthread</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
@@ -172,7 +174,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;PTW32_STATIC_LIB;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../pthread</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../;../pthread</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
