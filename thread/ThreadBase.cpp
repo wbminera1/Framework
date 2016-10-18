@@ -38,6 +38,7 @@ namespace thread
 {
 	void ThreadBase::OnStart()
 	{
+		m_Stop = false;
 		if (m_Name.size() > 0)
 		{
 			SetThreadName(-1, m_Name.c_str());

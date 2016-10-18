@@ -11,40 +11,11 @@
 #include "../thread/Condition.h"
 #include "../thread/Barrier.h"
 
+#include "../sockets/SocketClientBase.h"
+
 #include "Command.h"
 #include "CommandDispatcher.h"
 
-class SocketClientBase : public thread::Thread
-{
-public:
-	SocketClientBase() : Thread(__FUNCTION__) { }
-	virtual ~SocketClientBase() {}
-
-	void SetConnection(sockets::Socket& sock, const sockets::SocketAddress& addr);
-	void SetAddr(const sockets::SocketAddress& addr);
-	
-	sockets::Socket& GetSocket() { return m_Socket; }
-
-	virtual void Stop();
-
-protected:
-
-	virtual void OnStart();
-	virtual void Process();
-
-	sockets::Socket m_Socket;
-	sockets::SocketAddress m_Addr;
-
-};
-
-template <class TRecThread, class TSendThread>
-class SocketClientThreaded : public SocketClientBase
-{
-public:
-protected:
-	TRecThread  m_RecThread;
-	TSendThread m_SendThread;
-};
 
 class SocketClient : public Dispatched, public SocketClientBase
 {

@@ -151,6 +151,35 @@ TEST_CASE("ThreadTest", "[thread]")
 		REQUIRE(th1.m_OnStartEventPassed == true);
 		REQUIRE(th1.m_OnStopEventPassed == true);
 	}
+
+	class TestThreadPool : public thread::ThreadPool<TestThread>
+	{
+	public:
+		TestThreadPool(size_t size) : ThreadPool(size) {}
+	};
+
+	SECTION("ThreadPool")
+	{
+		const size_t ttpSize = 4;
+		TestThreadPool ttp(ttpSize);
+
+		for (size_t i = 0; i < ttpSize; ++i)
+		{
+			REQUIRE(ttp.Create() != nullptr);
+		}
+		REQUIRE(ttp.Create() == nullptr);
+
+		ttp.StopAll();
+		ttp.WaitAll();
+		ttp.JoinAll();
+
+		for (size_t i = 0; i < ttpSize; ++i)
+		{
+			REQUIRE(ttp.Create() != nullptr);
+		}
+		REQUIRE(ttp.Create() == nullptr);
+	}
+
 }
 
 void TestMutex()
@@ -198,46 +227,3 @@ void TestMutex()
 	Log(LOG_INFO, "Test stopped");
 }
 
-void TestPool()
-{
-	class TestThread : public thread::Thread
-	{
-	public:
-		TestThread() : Thread(__FUNCTION__)
-		{
-
-		}
-
-		void Process()
-		{
-			while (!m_Stop)
-			{
-				Log(LOG_INFO, "TestThread %lx", m_Thread);
-				Sleep(100);
-			}
-		}
-
-	};
-
-	class TestThreadPool : public thread::ThreadPool<TestThread>
-	{
-		public:
-			TestThreadPool(size_t size) : ThreadPool(size) {}
-	};
-
-	{
-		TestThreadPool tp(10);
-		Log(LOG_INFO, "ThreadPool creating");
-		while (true)
-		{
-			TestThread* thr = tp.Create();
-			if (thr == nullptr)
-			{
-				break;
-			}
-		}
-		Log(LOG_INFO, "ThreadPool sleeping");
-		Sleep(1000);
-	}
-	Log(LOG_INFO, "ThreadPool finished");
-}

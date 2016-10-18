@@ -21,7 +21,10 @@ public:
 
 protected:
 
-	virtual void OnConnection(TClient* client) = 0;
+	virtual void OnConnection(TClient* client)
+	{
+		client->Create();
+	}
 
 	virtual void Process()
 	{

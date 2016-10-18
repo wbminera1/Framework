@@ -60,13 +60,29 @@
     <ClCompile Include="rpc\CommandDispatcher.cpp">
       <Filter>rpc</Filter>
     </ClCompile>
-    <ClCompile Include="common\Log_Assert.cpp" />
     <ClCompile Include="thread\Barrier.cpp">
       <Filter>thread</Filter>
     </ClCompile>
-    <ClCompile Include="sockets\SocketServerBase.cpp" />
     <ClCompile Include="thread\ThreadBase.cpp">
       <Filter>thread</Filter>
+    </ClCompile>
+    <ClCompile Include="sockets\SocketServerBase.cpp">
+      <Filter>sockets</Filter>
+    </ClCompile>
+    <ClCompile Include="common\Log_Assert.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="sockets\SocketClientBase.cpp">
+      <Filter>sockets</Filter>
+    </ClCompile>
+    <ClCompile Include="sockets\SocketRecThread.cpp">
+      <Filter>sockets</Filter>
+    </ClCompile>
+    <ClCompile Include="sockets\SocketSendThread.cpp">
+      <Filter>sockets</Filter>
+    </ClCompile>
+    <ClCompile Include="sockets\SocketClientThreaded.cpp">
+      <Filter>sockets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -129,6 +145,18 @@
     </ClInclude>
     <ClInclude Include="thread\ThreadBase.h">
       <Filter>thread</Filter>
+    </ClInclude>
+    <ClInclude Include="sockets\SocketClientBase.h">
+      <Filter>sockets</Filter>
+    </ClInclude>
+    <ClInclude Include="sockets\SocketRecThread.h">
+      <Filter>sockets</Filter>
+    </ClInclude>
+    <ClInclude Include="sockets\SocketSendThread.h">
+      <Filter>sockets</Filter>
+    </ClInclude>
+    <ClInclude Include="sockets\SocketClientThreaded.h">
+      <Filter>sockets</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

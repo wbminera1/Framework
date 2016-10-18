@@ -21,8 +21,7 @@ class ThreadPool : public ThreadEventListener
 			for (size_t i = 0; i < size; ++i)
 			{
 				T* threadPtr = new T();
-				threadPtr->SetOnStart(ThreadOnStart, this);
-				threadPtr->SetOnStop(ThreadOnStop, this);
+				Listen(threadPtr);
 				m_StoppedThreads.push_back(threadPtr);
 			}
 		}
@@ -67,7 +66,7 @@ class ThreadPool : public ThreadEventListener
 			if (thr != nullptr) {
 				thr->Create();
 			}
-			return nullptr;
+			return thr;
 		}
 
 		void WaitAll()
@@ -105,12 +104,7 @@ class ThreadPool : public ThreadEventListener
 				m_StartedThreads[i]->Stop();
 			}
 		}
-/*
-	    T* Get(size_t idx)
-	    {
-			return m_StoppedThreads[i];
-	    }
-*/
+
 private:
 
 		virtual void OnStartEvent(Thread* thread) 
