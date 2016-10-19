@@ -1,8 +1,8 @@
 #include "../common/Log.h"
-#include "SocketClient.h"
+#include "SocketClientRPC.h"
 
 
-SocketClient::SocketClient()
+SocketClientRPC::SocketClientRPC()
 	: Dispatched(nullptr)
 	, m_RecThread(this)
 	, m_SendThread(this)
@@ -11,12 +11,12 @@ SocketClient::SocketClient()
 	Log(LOG_WARNING, __FUNCTION__);
 }
 
-SocketClient::~SocketClient()
+SocketClientRPC::~SocketClientRPC()
 {
 	Log(LOG_WARNING, __FUNCTION__ );
 }
 
-bool SocketClient::Handle(const Command& cmd, ICommandHandler* source)
+bool SocketClientRPC::Handle(const Command& cmd, ICommandHandler* source)
 {
 	Log(LOG_DEBUG, __FUNCTION__ " started");
 	
@@ -27,7 +27,7 @@ bool SocketClient::Handle(const Command& cmd, ICommandHandler* source)
 }
 
 
-void SocketClient::Process()
+void SocketClientRPC::Process()
 {
 	Log(LOG_DEBUG, __FUNCTION__ " started");
 
@@ -60,12 +60,12 @@ void SocketClient::Process()
 	Log(LOG_DEBUG, __FUNCTION__ " stopped");
 }
 
-void SocketClient::WaitForStart()
+void SocketClientRPC::WaitForStart()
 {
 	m_StartWait.Wait();
 }
 
-void SocketClient::SendThread::Send(const Command& cmd)
+void SocketClientRPC::SendThread::Send(const Command& cmd)
 {
 	thread::LockGuard<thread::Mutex> cmdLock(m_CommandMutex);
 	{
@@ -76,7 +76,7 @@ void SocketClient::SendThread::Send(const Command& cmd)
 	}
 }
 
-void SocketClient::RecThread::Process() {
+void SocketClientRPC::RecThread::Process() {
 	Log(LOG_DEBUG, __FUNCTION__ " started");
 	if (m_Client->GetSocket().IsValid())
 	{
@@ -113,7 +113,7 @@ void SocketClient::RecThread::Process() {
 	Log(LOG_DEBUG, __FUNCTION__ " stopped");
 }
 
-void SocketClient::SendThread::Process() {
+void SocketClientRPC::SendThread::Process() {
 	Log(LOG_DEBUG, __FUNCTION__ " started");
 	thread::LockGuard<thread::Condition> cmdLock(m_CommandWait);
 	m_Client->WaitForStart();

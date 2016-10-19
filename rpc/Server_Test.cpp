@@ -1,7 +1,7 @@
 #include "../common/Log.h"
 
-#include "SocketServer.h"
-#include "SocketClient.h"
+#include "SocketServerRPC.h"
+#include "SocketClientRPC.h"
 
 class TestCommandProcessor : public Dispatched
 {
@@ -84,7 +84,7 @@ int Server_Test()
 	CommandDispatcher dispatcher;
 	TestCommandProcessor processor(&dispatcher);
 
-	SocketServerRPC<SocketClient> sl(16, 9999, &dispatcher);
+	SocketServerRPC<SocketClientRPC> sl(16, 9999, &dispatcher);
 	sl.Create();
 
 	while (true)

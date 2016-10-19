@@ -17,11 +17,11 @@
 #include "CommandDispatcher.h"
 
 
-class SocketClient : public Dispatched, public SocketClientBase
+class SocketClientRPC : public Dispatched, public SocketClientBase
 {
 public:
-	SocketClient();
-	virtual ~SocketClient();
+	SocketClientRPC();
+	virtual ~SocketClientRPC();
 
 	virtual bool Handle(const Command& cmd, ICommandHandler* source);
 
@@ -34,20 +34,20 @@ private:
 	class RecThread : public thread::Thread
 	{
 	public:
-		RecThread(SocketClient* client)
+		RecThread(SocketClientRPC* client)
 			: Thread(__FUNCTION__)
 			, m_Client(client)
 		{
 			
 		}
 		void Process();
-		SocketClient* m_Client;
+		SocketClientRPC* m_Client;
 	};
 
 	class SendThread : public thread::Thread
 	{
 	public:
-		SendThread(SocketClient* client)
+		SendThread(SocketClientRPC* client)
 			: Thread(__FUNCTION__)
 			, m_Client(client)
 		{
@@ -59,7 +59,7 @@ private:
 	protected:
 		virtual void Process();
 
-		SocketClient* m_Client;
+		SocketClientRPC* m_Client;
 
 		thread::Mutex m_CommandMutex;
 		thread::Condition m_CommandWait;

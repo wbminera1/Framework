@@ -24,12 +24,6 @@
     <ClCompile Include="rpc\CommandEnums.cpp">
       <Filter>rpc</Filter>
     </ClCompile>
-    <ClCompile Include="rpc\SocketClient.cpp">
-      <Filter>rpc</Filter>
-    </ClCompile>
-    <ClCompile Include="rpc\SocketServer.cpp">
-      <Filter>rpc</Filter>
-    </ClCompile>
     <ClCompile Include="sockets\Socket.cpp">
       <Filter>sockets</Filter>
     </ClCompile>
@@ -84,6 +78,12 @@
     <ClCompile Include="sockets\SocketClientThreaded.cpp">
       <Filter>sockets</Filter>
     </ClCompile>
+    <ClCompile Include="rpc\SocketServerRPC.cpp">
+      <Filter>rpc</Filter>
+    </ClCompile>
+    <ClCompile Include="rpc\SocketClientRPC.cpp">
+      <Filter>rpc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common\Log.h">
@@ -96,12 +96,6 @@
       <Filter>rpc</Filter>
     </ClInclude>
     <ClInclude Include="rpc\CommandEnums.h">
-      <Filter>rpc</Filter>
-    </ClInclude>
-    <ClInclude Include="rpc\SocketClient.h">
-      <Filter>rpc</Filter>
-    </ClInclude>
-    <ClInclude Include="rpc\SocketServer.h">
       <Filter>rpc</Filter>
     </ClInclude>
     <ClInclude Include="sockets\Socket.h">
@@ -157,6 +151,12 @@
     </ClInclude>
     <ClInclude Include="sockets\SocketClientThreaded.h">
       <Filter>sockets</Filter>
+    </ClInclude>
+    <ClInclude Include="rpc\SocketServerRPC.h">
+      <Filter>rpc</Filter>
+    </ClInclude>
+    <ClInclude Include="rpc\SocketClientRPC.h">
+      <Filter>rpc</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

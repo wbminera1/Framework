@@ -25,8 +25,8 @@
     <ClCompile Include="rpc\CommandDispatcher.cpp" />
     <ClCompile Include="rpc\CommandEnums.cpp" />
     <ClCompile Include="rpc\CommandSendBlocking.cpp" />
-    <ClCompile Include="rpc\SocketClient.cpp" />
-    <ClCompile Include="rpc\SocketServer.cpp" />
+    <ClCompile Include="rpc\SocketClientRPC.cpp" />
+    <ClCompile Include="rpc\SocketServerRPC.cpp" />
     <ClCompile Include="sockets\Socket.cpp" />
     <ClCompile Include="sockets\SocketAddress.cpp" />
     <ClCompile Include="sockets\SocketClientBase.cpp" />
@@ -51,8 +51,8 @@
     <ClInclude Include="rpc\CommandDispatcher.h" />
     <ClInclude Include="rpc\CommandEnums.h" />
     <ClInclude Include="rpc\CommandSendBlocking.h" />
-    <ClInclude Include="rpc\SocketClient.h" />
-    <ClInclude Include="rpc\SocketServer.h" />
+    <ClInclude Include="rpc\SocketClientRPC.h" />
+    <ClInclude Include="rpc\SocketServerRPC.h" />
     <ClInclude Include="sockets\Socket.h" />
     <ClInclude Include="sockets\SocketAddress.h" />
     <ClInclude Include="sockets\SocketClientBase.h" />
