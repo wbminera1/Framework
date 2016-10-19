@@ -148,7 +148,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="proxy\ProxyMain.cpp" />
+    <ClCompile Include="proxy\ProxyMain.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="proxy\RPCMain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\pthread\pthread_lib.2015.vcxproj">

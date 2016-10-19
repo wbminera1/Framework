@@ -21,7 +21,7 @@ protected:
 	{
 		client->SetDispatcher(m_Dispatcher);
 		client->Create();
-		client->WaitForStart();
+		//client->WaitForStart();
 	}
 
 	CommandDispatcher* m_Dispatcher;

@@ -11,13 +11,13 @@
 #include "../thread/Condition.h"
 #include "../thread/Barrier.h"
 
-#include "../sockets/SocketClientBase.h"
+#include "../sockets/SocketClientThreaded.h"
 
 #include "Command.h"
 #include "CommandDispatcher.h"
 
 
-class SocketClientRPC : public Dispatched, public SocketClientBase
+class SocketClientRPC : public Dispatched,  public sockets::SocketClientThreaded<sockets::SocketRecThread, sockets::SocketSendThread>
 {
 public:
 	SocketClientRPC();
@@ -25,51 +25,14 @@ public:
 
 	virtual bool Handle(const Command& cmd, ICommandHandler* source);
 
-	void WaitForStart();
 
 private:
 	
 	virtual void Process();
 
-	class RecThread : public thread::Thread
-	{
-	public:
-		RecThread(SocketClientRPC* client)
-			: Thread(__FUNCTION__)
-			, m_Client(client)
-		{
-			
-		}
-		void Process();
-		SocketClientRPC* m_Client;
-	};
+	virtual void OnReceivedEvent(Thread* thread);
 
-	class SendThread : public thread::Thread
-	{
-	public:
-		SendThread(SocketClientRPC* client)
-			: Thread(__FUNCTION__)
-			, m_Client(client)
-		{
-			m_CommandBuffer.reserve(1024);
-		}
-
-		void Send(const Command& cmd);
-
-	protected:
-		virtual void Process();
-
-		SocketClientRPC* m_Client;
-
-		thread::Mutex m_CommandMutex;
-		thread::Condition m_CommandWait;
-		std::vector<char> m_CommandBuffer;
-	};
-
-	RecThread m_RecThread;
-	SendThread m_SendThread;
-
-	thread::Barrier m_StartWait;
+	std::vector<char> m_CommandBuffer;
 };
 
 #endif // __SOCKETCLIENT_H_
