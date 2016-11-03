@@ -8,10 +8,10 @@ int Socket_Test()
 	const char addStrSrc[] = "127.0.0.1";
 	sockets::SocketAddress a4(AF_INET);
 	sockets::SocketAddress m4(a4);
-	a4.pton(addStrSrc);
+	a4.SetAddress(addStrSrc);
 	std::string addrStrConv;
-	a4.ntop(addrStrConv);
-	a4.port(9999);
+	a4.GetAddress(addrStrConv);
+	a4.SetPort(9999);
 	Log(LOG_INFO, "Addr %s -> %s", addStrSrc, addrStrConv.c_str());
 
 	sockets::Socket::Startup();

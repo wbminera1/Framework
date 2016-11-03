@@ -36,6 +36,12 @@ struct SocketAddress
 		}
 	}
 
+	SocketAddress(const char* addr, int port, int af = AF_UNSPEC) : SocketAddress(af)
+	{
+		SetAddress(addr);
+		SetPort(port);
+	}
+
 	const SOCKADDR* getAddr() const 
 	{
 		return (SOCKADDR*)&m_addr;
@@ -53,7 +59,7 @@ struct SocketAddress
 	}
 
 
-	bool pton(const char* addr)
+	bool SetAddress(const char* addr)
 	{
 		int ret = 0;
 		if (m_af == AF_INET) {
@@ -67,7 +73,7 @@ struct SocketAddress
 		return ret == 1;
 	}
 	
-	bool ntop(std::string& addr)
+	bool GetAddress(std::string& addr)
 	{
 		const char* ptr;
 		char tmpBuff[statics::Max(INET_ADDRSTRLEN, INET6_ADDRSTRLEN)];
@@ -86,7 +92,7 @@ struct SocketAddress
 		return false;
 	}
 
-	void port(int pnum)
+	void SetPort(int pnum)
 	{
 		if (m_af == AF_INET) {
 			m_addr.ip4.sin_port = htons(pnum);

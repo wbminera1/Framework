@@ -29,8 +29,8 @@ protected:
 	virtual void Process()
 	{
 		sockets::SocketAddress serverA(AF_INET);
-		serverA.pton("127.0.0.1");
-		serverA.port(m_Port);
+		serverA.SetAddress("127.0.0.1");
+		serverA.SetPort(m_Port);
 		sockets::Socket serverS;
 
 		if (serverS.Open() && serverS.Bind(serverA)) {

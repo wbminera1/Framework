@@ -3,6 +3,8 @@
 #include "SocketServerRPC.h"
 #include "SocketClientRPC.h"
 
+#include "Catch/single_include/catch.hpp"
+
 class TestCommandProcessor : public Dispatched
 {
 public:
@@ -96,4 +98,34 @@ int Server_Test()
 	Log(LOG_INFO, __FUNCTION__ " stopped");
 
 	return 0;
+}
+
+
+TEST_CASE("ServerTest", "[sockets]")
+{
+	class TestClient : public sockets::SocketClientThreaded<sockets::SocketRecThread, sockets::SocketSendThread>
+	{
+	public:
+		TestClient()
+		{
+		}
+
+		~TestClient() { }
+
+	protected:
+	};
+
+
+	class TestServer : public SocketServerBase<TestClient>
+	{
+	public:
+		TestServer() : SocketServerBase(4, 7777) { }
+		~TestServer() { }
+
+	};
+
+	SECTION("Server")
+	{
+
+	}
 }
