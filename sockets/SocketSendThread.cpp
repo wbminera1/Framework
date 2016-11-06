@@ -64,7 +64,7 @@ namespace sockets
 	void SocketSendThread::Send(const std::vector<char>& data)
 	{
 		{
-			thread::LockGuard<thread::Mutex> cmdLock(m_CommandWait);
+			thread::LockGuard<thread::CriticalSection> cmdLock(m_CommandWait);
 			m_Data.insert(m_Data.end(), data.begin(), data.end());
 		}
 		m_CommandWait.Signal();

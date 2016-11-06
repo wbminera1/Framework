@@ -11,7 +11,7 @@ public:
 
 	static void Sleep(unsigned long milliseconds);
 
-	Thread(const char* name = nullptr) : ThreadBase(name) { }
+	Thread(const char* name = nullptr, ThreadProcType proc = BaseProc) : ThreadBase(name, proc) { }
 	virtual ~Thread() {}
 
 	struct ThreadEventArgs
@@ -56,10 +56,10 @@ protected:
 class ThreadCancelable : public Thread
 {
 public:
-	virtual int Create();
+	ThreadCancelable(const char* name = nullptr) : Thread(name, CancelableProc) { }
 
 protected:
-	static void* StartCancelable(void* ptr);
+	static ThreadProcReturnType THREADAPI CancelableProc(ThreadProcParamType ptr);
 	static void Cleanup(void* ptr);
 };
 

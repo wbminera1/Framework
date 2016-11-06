@@ -13,6 +13,12 @@
     <Filter Include="rpc">
       <UniqueIdentifier>{ea14a6b3-d58a-4ca6-aacd-c86c1c3e9c11}</UniqueIdentifier>
     </Filter>
+    <Filter Include="thread\Win64">
+      <UniqueIdentifier>{438d118f-cae6-4580-8793-5c444cae5a46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thread\POSIX">
+      <UniqueIdentifier>{e1956d44-3226-4a6e-bc9d-a03b3eedabea}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="common\Log.cpp">
@@ -57,9 +63,6 @@
     <ClCompile Include="thread\Barrier.cpp">
       <Filter>thread</Filter>
     </ClCompile>
-    <ClCompile Include="thread\ThreadBase.cpp">
-      <Filter>thread</Filter>
-    </ClCompile>
     <ClCompile Include="sockets\SocketServerBase.cpp">
       <Filter>sockets</Filter>
     </ClCompile>
@@ -83,6 +86,48 @@
     </ClCompile>
     <ClCompile Include="rpc\SocketClientRPC.cpp">
       <Filter>rpc</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\ThreadBase.cpp">
+      <Filter>thread</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\Thread_Win64.cpp">
+      <Filter>thread\Win64</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\ThreadBase_Win64.cpp">
+      <Filter>thread\Win64</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\Thread_POSIX.cpp">
+      <Filter>thread\POSIX</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\ThreadBase_POSIX.cpp">
+      <Filter>thread\POSIX</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\Mutex_Win64.cpp">
+      <Filter>thread\Win64</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\Mutex_POSIX.cpp">
+      <Filter>thread\POSIX</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\Condition_Win64.cpp">
+      <Filter>thread\Win64</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\Condition_POSIX.cpp">
+      <Filter>thread\POSIX</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\CriticalSection.cpp">
+      <Filter>thread</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\CriticalSection_POSIX.cpp">
+      <Filter>thread\POSIX</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\CriticalSection_Win64.cpp">
+      <Filter>thread\Win64</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\Barrier_POSIX.cpp">
+      <Filter>thread\POSIX</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\Barrier_Win64.cpp">
+      <Filter>thread\Win64</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -157,6 +202,9 @@
     </ClInclude>
     <ClInclude Include="rpc\SocketClientRPC.h">
       <Filter>rpc</Filter>
+    </ClInclude>
+    <ClInclude Include="thread\CriticalSection.h">
+      <Filter>thread</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

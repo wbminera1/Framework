@@ -1,33 +1,35 @@
-
 #ifndef BARRIER_H_
 #define BARRIER_H_
-
+#ifdef _WIN64
+#include <windows.h>
+#ifdef WINDOWS8
+typedef SYNCHRONIZATION_BARRIER	BarrierType;
+#else
+struct BarrierType
+{
+	CRITICAL_SECTION m_CriticalSection;
+	CONDITION_VARIABLE m_Condition;
+	volatile unsigned int m_Count;
+};
+#endif WINDOWS8
+#endif
+#ifdef __unix__
 #include <pthread.h>
-#include "../common/Log.h"
+typedef pthread_barrier_t BarrierType;
+#endif
 
 namespace thread
 {
 	class Barrier
 	{
 	public:
-		Barrier(unsigned int count)
-		{
-			pthread_barrier_init(&m_Barrier, nullptr, count);
-		}
+		Barrier(unsigned int count);
+		~Barrier();
 
-		~Barrier()
-		{
-			pthread_barrier_destroy(&m_Barrier);
-		}
-
-		void Wait()
-		{
-			pthread_barrier_wait(&m_Barrier);
-		}
+		void Wait();
 
 	private:
-
-		pthread_barrier_t m_Barrier;
+		BarrierType m_Barrier;
 	};
 
 } // namespace thread

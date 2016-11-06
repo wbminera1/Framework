@@ -35,13 +35,53 @@
     <ClCompile Include="sockets\SocketSendThread.cpp" />
     <ClCompile Include="sockets\SocketServerBase.cpp" />
     <ClCompile Include="thread\Barrier.cpp" />
+    <ClCompile Include="thread\Barrier_POSIX.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="thread\Barrier_Win64.cpp" />
     <ClCompile Include="thread\Condition.cpp" />
+    <ClCompile Include="thread\Condition_POSIX.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="thread\Condition_Win64.cpp" />
+    <ClCompile Include="thread\CriticalSection.cpp" />
+    <ClCompile Include="thread\CriticalSection_POSIX.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="thread\CriticalSection_Win64.cpp" />
     <ClCompile Include="thread\Misc.cpp" />
     <ClCompile Include="thread\Mutex.cpp" />
+    <ClCompile Include="thread\Mutex_POSIX.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="thread\Mutex_Win64.cpp" />
     <ClCompile Include="thread\TaskQueue.cpp" />
-    <ClCompile Include="thread\Thread.cpp" />
-    <ClCompile Include="thread\ThreadBase.cpp" />
+    <ClCompile Include="thread\Thread.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="thread\ThreadBase.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="thread\ThreadBase_POSIX.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="thread\ThreadBase_Win64.cpp" />
     <ClCompile Include="thread\ThreadPool.cpp" />
+    <ClCompile Include="thread\Thread_POSIX.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="thread\Thread_Win64.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common\Log.h" />
@@ -62,17 +102,13 @@
     <ClInclude Include="sockets\SocketServerBase.h" />
     <ClInclude Include="thread\Barrier.h" />
     <ClInclude Include="thread\Condition.h" />
+    <ClInclude Include="thread\CriticalSection.h" />
     <ClInclude Include="thread\Misc.h" />
     <ClInclude Include="thread\Mutex.h" />
     <ClInclude Include="thread\TaskQueue.h" />
     <ClInclude Include="thread\Thread.h" />
     <ClInclude Include="thread\ThreadBase.h" />
     <ClInclude Include="thread\ThreadPool.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\pthread\pthread_lib.2015.vcxproj">
-      <Project>{a063dfad-6995-4e1a-afff-e43dc11e95b1}</Project>
-    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{C6839DB6-EF79-4716-9587-0713F04C50CE}</ProjectGuid>

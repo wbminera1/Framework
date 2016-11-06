@@ -1,7 +1,14 @@
 #ifndef MUTEX_H_
 #define MUTEX_H_
-
+#ifdef _WIN64
+#include <windows.h>
+typedef HANDLE  MutexType;
+#endif
+#ifdef __unix__
 #include <pthread.h>
+typedef pthread_mutex_t MutexType;
+#endif
+
 #include "../common/Log.h"
 
 namespace thread
@@ -10,15 +17,8 @@ namespace thread
 	class Mutex
 	{
 	    public:
-	        Mutex()
-	        {
-	            pthread_mutex_init(&m_Mutex, NULL);
-	        }
-	
-	        ~Mutex()
-	        {
-	            pthread_mutex_destroy(&m_Mutex);
-	        }
+			Mutex();
+			~Mutex();
 	
 	        bool IsLocked()
 	        {
@@ -30,30 +30,19 @@ namespace thread
 	            return true;
 	        }
 	
-	        bool TryLock()
-	        {
-	            int lock = pthread_mutex_trylock(&m_Mutex);
-	            return (lock == 0);
-	        }
-	
-	        void Lock()
-	        {
-	            pthread_mutex_lock(&m_Mutex);
-	        }
-	
-	        void Unlock()
-	        {
-	            pthread_mutex_unlock(&m_Mutex);
-	        }
+			bool TryLock();
+			void Lock();
+			void Unlock();
 	
 	    protected:
-	        pthread_mutex_t& Get()
+
+			MutexType& Get()
 	        {
 	            return  m_Mutex;
 	        }
 	
 	    private:
-	        pthread_mutex_t m_Mutex;
+			MutexType m_Mutex;
 	};
 
 	template <class T>

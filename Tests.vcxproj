@@ -159,9 +159,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\pthread\pthread_lib.2015.vcxproj">
-      <Project>{a063dfad-6995-4e1a-afff-e43dc11e95b1}</Project>
-    </ProjectReference>
     <ProjectReference Include="FrameworkLib.vcxproj">
       <Project>{c6839db6-ef79-4716-9587-0713f04c50ce}</Project>
     </ProjectReference>

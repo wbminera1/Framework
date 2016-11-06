@@ -1,6 +1,3 @@
-#include <windows.h>
-#include <excpt.h>
-
 #include "Thread.h"
 namespace thread
 {
@@ -29,26 +26,6 @@ namespace thread
 			(*m_OnStop.m_Fn)(&m_OnStop.m_Args);
 		}
 
-	}
-
-	int ThreadCancelable::Create()
-	{
-		pthread_attr_t attr;
-		pthread_attr_init(&attr); // TODO attributes to class
-		pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-		int res = pthread_create(&m_Thread, &attr, &ThreadCancelable::StartCancelable, (void *) this);
-		pthread_attr_destroy(&attr);
-		return res;
-	}
-
-	void* ThreadCancelable::StartCancelable(void* ptr)
-	{
-		ThreadCancelable* self = static_cast<ThreadCancelable*>(ptr);
-		pthread_cleanup_push(Cleanup, self);
-		self->OnStart();
-		self->Process();
-		pthread_cleanup_pop(1);
-		return NULL;
 	}
 
 	void ThreadCancelable::Cleanup(void* ptr)
