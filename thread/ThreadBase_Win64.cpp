@@ -45,16 +45,16 @@ namespace thread
 		}
 	}
 
-	int ThreadBase::Create()
+	bool ThreadBase::Create()
 	{
 		m_Data.Handle = CreateThread( NULL, 0, m_Proc, (void *) this, 0, &m_Data.Id);
 		return m_Data.Handle != NULL;
 	}
 
-	int ThreadBase::Join()
+	bool ThreadBase::Join()
 	{
 		DWORD res = WaitForSingleObject(m_Data.Handle, INFINITE);
-		return res != 0;
+		return res == 0;
 	}
 
 

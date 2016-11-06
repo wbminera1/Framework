@@ -10,7 +10,7 @@ namespace thread
 		m_Stop = false;
 	}
 
-	int ThreadBase::Create()
+	bool ThreadBase::Create()
 	{
 		pthread_attr_t attr;
 		pthread_attr_init(&attr); // TODO attributes to class
@@ -20,11 +20,11 @@ namespace thread
 		return res != NULL;
 	}
 
-	int ThreadBase::Join()
+	bool ThreadBase::Join()
 	{
 		void* status;
 		int res = pthread_join(m_Thread, &status);
-		return res;
+		return res == 0;
 	}
 
 

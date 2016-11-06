@@ -57,9 +57,9 @@ class ThreadBase
 			return m_Name;
 		}
 
-		virtual int Create();
+		virtual bool Create();
 
-		virtual int Join();
+		virtual bool Join();
 
 		virtual void Stop()
         {

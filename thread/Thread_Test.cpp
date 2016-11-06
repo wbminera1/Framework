@@ -53,12 +53,12 @@ TEST_CASE("ThreadTest", "[thread]")
 		TestThreadBase th1;
 		th1.SetName("TestThreadBase");
 		REQUIRE((th1.m_OnStartPassed == false && th1.m_OnStopPassed == false && th1.m_OnProcessStartedPassed == false && th1.m_OnProcessStoppedPassed == false) == true);
-		REQUIRE(th1.Create() == 0);
+		REQUIRE(th1.Create());
 		thread::Thread::Sleep(200);
 		REQUIRE(th1.GetName() == "TestThreadBase");
 		REQUIRE((th1.m_OnStartPassed == true && th1.m_OnStopPassed == false && th1.m_OnProcessStartedPassed == true && th1.m_OnProcessStoppedPassed == false) == true);
 		th1.Stop();
-		REQUIRE(th1.Join() == 0);
+		REQUIRE(th1.Join());
 		REQUIRE((th1.m_OnStartPassed == true && th1.m_OnStopPassed == true && th1.m_OnProcessStartedPassed == true && th1.m_OnProcessStoppedPassed == true) == true);
 	}
 
@@ -133,7 +133,7 @@ TEST_CASE("ThreadTest", "[thread]")
 		REQUIRE(th1.m_OnProcessStoppedPassed == false);
 		REQUIRE(th1.m_OnStartEventPassed == false);
 		REQUIRE(th1.m_OnStopEventPassed == false);
-		REQUIRE(th1.Create() == 0);
+		REQUIRE(th1.Create());
 		thread::Thread::Sleep(200);
 		REQUIRE(th1.GetName() == "TestThread");
 		REQUIRE(th1.m_OnStartPassed == true);
@@ -143,7 +143,7 @@ TEST_CASE("ThreadTest", "[thread]")
 		REQUIRE(th1.m_OnStartEventPassed == true);
 		REQUIRE(th1.m_OnStopEventPassed == false);
 		th1.Stop();
-		REQUIRE(th1.Join() == 0);
+		REQUIRE(th1.Join());
 		REQUIRE(th1.m_OnStartPassed == true);
 		REQUIRE(th1.m_OnStopPassed == true);
 		REQUIRE(th1.m_OnProcessStartedPassed == true);
