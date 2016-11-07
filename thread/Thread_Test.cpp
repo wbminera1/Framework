@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "Thread.h"
 #include "Mutex.h"
+#include "CriticalSection.h"
 #include "Condition.h"
 #include "ThreadPool.h"
 #include "../common/Log.h"
@@ -168,7 +169,7 @@ TEST_CASE("ThreadTest", "[thread]")
 			REQUIRE(ttp.Create() != nullptr);
 		}
 		REQUIRE(ttp.Create() == nullptr);
-
+		Sleep(200); //!!Barrier
 		ttp.StopAll();
 		ttp.WaitAll();
 		ttp.JoinAll();
@@ -181,49 +182,84 @@ TEST_CASE("ThreadTest", "[thread]")
 	}
 
 }
-
-void TestMutex()
+template <class sync_type>
+class SyncTestThread : public thread::ThreadBase
 {
-	class TThread : public thread::Thread
+public:
+	SyncTestThread(sync_type& syncVar, unsigned int& counter)
+		: ThreadBase(__FUNCTION__)
+		, m_SyncVar(syncVar)
+		, m_Counter(counter)
+	{   }
+private:
+	void Process()
 	{
-	public:
-		TThread(const char* name, thread::Mutex& mutex, thread::Condition& cond)
-			: Thread(__FUNCTION__)
-			, m_Name(name)
-			, m_Mutex(mutex)
-			, m_Cond(cond)
+		thread::Thread::Sleep(0);
+		for (size_t i = 0; i < 1024; ++i)
 		{
-
+			m_SyncVar.Lock();
+			++m_Counter;
+			m_SyncVar.Unlock();
+			thread::Thread::Sleep(0);
 		}
-
-		void Process()
+		for (size_t i = 0; i < 1024; ++i)
 		{
-			Log(LOG_INFO, "Thread %s started", m_Name);
-			m_Cond.Lock();
-			Log(LOG_INFO, "Thread %s before condition", m_Name);
-			m_Cond.TimedWait(3);
-			Log(LOG_INFO, "Thread %s after condition", m_Name);
-			m_Cond.Unlock();
-			Log(LOG_INFO, "Thread %s stopped", m_Name);
+			while (!m_SyncVar.TryLock())
+			{
+				thread::Thread::Sleep(0);
+			}
+			++m_Counter;
+			m_SyncVar.Unlock();
 		}
+	}
+	sync_type& m_SyncVar;
+	unsigned int& m_Counter;
+};
 
-	private:
-		const char* m_Name;
-		thread::Mutex& m_Mutex;
-		thread::Condition& m_Cond;
-	};
-
-	Log(LOG_INFO, "Test started");
-	thread::Mutex mutex;
-	thread::Condition cond;
-	TThread t1("T1", mutex, cond);
-	t1.Create();
-	Sleep(2000);
-	cond.Lock();
-	Log(LOG_INFO, "Signaled");
-	cond.Signal();
-	cond.Unlock();
-	t1.Join();
-	Log(LOG_INFO, "Test stopped");
+template <class sync_type>
+bool SyncTestFunc()
+{
+	static sync_type sync;
+	static unsigned int syncCount = 0;
+	SyncTestThread<sync_type>* threads[32];
+	for (size_t i = 0; i < 32; ++i) {
+		threads[i] = new SyncTestThread<sync_type>(sync, syncCount);
+	}
+	for (size_t i = 0; i < 32; ++i) {
+		threads[i]->Create();
+	}
+	for (size_t i = 0; i < 32; ++i) {
+		threads[i]->Join();
+	}
+	for (size_t i = 0; i < 32; ++i) {
+		delete threads[i];
+	}
+	return syncCount == 2 * 32 * 1024;
 }
 
+TEST_CASE("SyncTest", "[thread]")
+{
+	class NoLock
+	{
+	public:
+		bool TryLock() { return true; }
+		void Lock() { }
+		void Unlock() { }
+	};
+
+	SECTION("NoLock")
+	{
+		REQUIRE(SyncTestFunc<NoLock>() == false);
+	}
+
+	SECTION("Mutex")
+	{
+		REQUIRE(SyncTestFunc<thread::Mutex>() == true);
+	}
+
+	SECTION("CriticalSection")
+	{
+		REQUIRE(SyncTestFunc<thread::CriticalSection>() == true);
+	}
+
+}

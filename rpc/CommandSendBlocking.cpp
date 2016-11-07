@@ -11,8 +11,7 @@ CommandSendBlocking::CommandSendBlocking()
 bool CommandSendBlocking::SendBlocking(const Command& cmd, ICommandHandler& dest, CommandDispatcher& disp)
 {
 	bool status = true;
-
-	pthread_mutex_lock(&count_mutex);
+	count_mutex.Lock();
 	//  struct timespec timeToWait;
 	//  clock_gettime(CLOCK_MONOTONIC, &timeToWait);
 	//  timeToWait.tv_sec += timeOut;
@@ -31,7 +30,7 @@ bool CommandSendBlocking::SendBlocking(const Command& cmd, ICommandHandler& dest
 		}
 	}
 	disp.DelHandler(this);
-	pthread_mutex_unlock(&count_mutex);
+	count_mutex.Unlock();
 	return status;
 }
 
@@ -39,14 +38,14 @@ bool CommandSendBlocking::Handle(Command& cmd, ICommandHandler* source)
 {
 	if (cmd.m_Command == cResponse)
 	{
-		pthread_mutex_lock(&count_mutex);
+		count_mutex.Lock();
 		if (m_Response != NULL)
 		{
 			m_Response->m_Command = cmd.m_Command;
 		}
 		received = true;
-		pthread_cond_signal(&count_threshold_cv);
-		pthread_mutex_unlock(&count_mutex);
+		count_threshold_cv.Signal();
+		count_mutex.Unlock();
 		return true;
 	}
 	return false;

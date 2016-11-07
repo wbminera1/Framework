@@ -1,11 +1,13 @@
 #ifndef COMMANDSENDBLOCKING_H_
 #define COMMANDSENDBLOCKING_H_
 #include "CommandDispatcher.h"
+#include "../thread/Mutex.h"
+#include "../thread/Condition.h"
 
 class CommandSendBlocking : public ICommandHandler
 {
-	pthread_mutex_t count_mutex;
-	pthread_cond_t count_threshold_cv;
+	thread::Mutex count_mutex;
+	thread::Condition count_threshold_cv;
 	volatile bool received;
 	eCommand command;
 

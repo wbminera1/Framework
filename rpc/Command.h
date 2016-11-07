@@ -3,7 +3,6 @@
 #include <string>
 #include <vector>
 #include <cstdint>
-#include <pthread.h>
 
 #include "CommandEnums.h"
 
