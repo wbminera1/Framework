@@ -221,20 +221,21 @@ bool SyncTestFunc()
 {
 	static sync_type sync;
 	static unsigned int syncCount = 0;
-	SyncTestThread<sync_type>* threads[32];
-	for (size_t i = 0; i < 32; ++i) {
+	const size_t threadsNum = 32;
+	SyncTestThread<sync_type>* threads[threadsNum];
+	for (size_t i = 0; i < threadsNum; ++i) {
 		threads[i] = new SyncTestThread<sync_type>(sync, syncCount);
 	}
-	for (size_t i = 0; i < 32; ++i) {
+	for (size_t i = 0; i < threadsNum; ++i) {
 		threads[i]->Create();
 	}
-	for (size_t i = 0; i < 32; ++i) {
+	for (size_t i = 0; i < threadsNum; ++i) {
 		threads[i]->Join();
 	}
-	for (size_t i = 0; i < 32; ++i) {
+	for (size_t i = 0; i < threadsNum; ++i) {
 		delete threads[i];
 	}
-	return syncCount == 2 * 32 * 1024;
+	return syncCount == 2 * threadsNum * 1024;
 }
 
 TEST_CASE("SyncTest", "[thread]")
@@ -262,4 +263,58 @@ TEST_CASE("SyncTest", "[thread]")
 		REQUIRE(SyncTestFunc<thread::CriticalSection>() == true);
 	}
 
+	SECTION("Condition")
+	{
+		class TestConditionThread : public thread::ThreadBase
+		{
+		public:
+			TestConditionThread(thread::Condition& condition) : ThreadBase(__FUNCTION__), m_Condition(condition)
+			{
+				m_OnStartPassed =
+					m_OnStopPassed =
+					m_OnProcessStartedPassed =
+					m_OnProcessStoppedPassed = false;
+			}
+
+			virtual void OnStart()
+			{
+				m_Condition.Lock();
+				m_OnStartPassed = true;
+			}
+
+			virtual void Process()
+			{
+				m_OnProcessStartedPassed = true;
+				m_Condition.Wait();
+				m_OnProcessStoppedPassed = true;
+			}
+
+			virtual void OnStop()
+			{
+				m_OnStopPassed = true;
+				m_Condition.Unlock();
+			}
+
+			volatile bool m_OnStartPassed;
+			volatile bool m_OnStopPassed;
+			volatile bool m_OnProcessStartedPassed;
+			volatile bool m_OnProcessStoppedPassed;
+
+			thread::Condition& m_Condition;
+		};
+
+		thread::Condition condition;
+		TestConditionThread tct(condition);
+		tct.Create();
+		thread::Thread::Sleep(200);
+		condition.Lock();
+		REQUIRE((
+			tct.m_OnStartPassed == true &&
+			tct.m_OnStopPassed == false &&
+			tct.m_OnProcessStartedPassed == true &&
+			tct.m_OnProcessStoppedPassed == false) == true);
+		condition.Signal();
+		condition.Unlock();
+		tct.Join();
+	}
 }
