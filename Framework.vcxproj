@@ -171,6 +171,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="tests\Framework_Test_Main.cpp" />
+    <ClCompile Include="tests\Test_JSON.cpp" />
     <ClCompile Include="thread\Thread_Test.cpp" />
   </ItemGroup>
   <ItemGroup>

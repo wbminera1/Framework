@@ -19,6 +19,9 @@
     <Filter Include="thread\POSIX">
       <UniqueIdentifier>{e1956d44-3226-4a6e-bc9d-a03b3eedabea}</UniqueIdentifier>
     </Filter>
+    <Filter Include="gason">
+      <UniqueIdentifier>{c8657e18-1f00-4f8c-897c-39493a33513c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="common\Log.cpp">
@@ -129,6 +132,9 @@
     <ClCompile Include="thread\Barrier_Win64.cpp">
       <Filter>thread\Win64</Filter>
     </ClCompile>
+    <ClCompile Include="..\gason\src\gason.cpp">
+      <Filter>gason</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common\Log.h">
@@ -205,6 +211,9 @@
     </ClInclude>
     <ClInclude Include="thread\CriticalSection.h">
       <Filter>thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\gason\src\gason.h">
+      <Filter>gason</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

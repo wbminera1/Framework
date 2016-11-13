@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\gason\src\gason.cpp" />
     <ClCompile Include="common\Log.cpp" />
     <ClCompile Include="common\Log_Assert.cpp" />
     <ClCompile Include="rpc\Command.cpp" />
@@ -84,6 +85,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\gason\src\gason.h" />
     <ClInclude Include="common\Log.h" />
     <ClInclude Include="common\Log_Assert.h" />
     <ClInclude Include="common\Statics.h" />
