@@ -22,6 +22,9 @@
     <Filter Include="gason">
       <UniqueIdentifier>{c8657e18-1f00-4f8c-897c-39493a33513c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Stratum">
+      <UniqueIdentifier>{c5c74161-bf2c-43b4-8944-b3ad72ec5a4f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="common\Log.cpp">
@@ -132,7 +135,10 @@
     <ClCompile Include="thread\Barrier_Win64.cpp">
       <Filter>thread\Win64</Filter>
     </ClCompile>
-    <ClCompile Include="..\gason\src\gason.cpp">
+    <ClCompile Include="stratum\Stratum.cpp">
+      <Filter>Stratum</Filter>
+    </ClCompile>
+    <ClCompile Include="..\gason--\src\gason.cpp">
       <Filter>gason</Filter>
     </ClCompile>
   </ItemGroup>
@@ -212,8 +218,25 @@
     <ClInclude Include="thread\CriticalSection.h">
       <Filter>thread</Filter>
     </ClInclude>
-    <ClInclude Include="..\gason\src\gason.h">
+    <ClInclude Include="stratum\Stratum.h">
+      <Filter>Stratum</Filter>
+    </ClInclude>
+    <ClInclude Include="..\gason--\src\gason.hpp">
       <Filter>gason</Filter>
     </ClInclude>
+    <ClInclude Include="..\gason--\src\jsonbuilder.hpp">
+      <Filter>gason</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="stratum\Ethereum_specification_R1.txt">
+      <Filter>Stratum</Filter>
+    </Text>
+    <Text Include="stratum\NiceHash_Sample.txt">
+      <Filter>Stratum</Filter>
+    </Text>
+    <Text Include="stratum\Stratum protocol changes for ZCash.txt">
+      <Filter>Stratum</Filter>
+    </Text>
   </ItemGroup>
 </Project>

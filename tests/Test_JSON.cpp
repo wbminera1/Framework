@@ -3,7 +3,7 @@
 
 #include "../common/Log.h"
 
-#include "gason/src/gason.h"
+#include "gason--/src/gason.hpp"
 #include "Catch/single_include/catch.hpp"
 
 bool LoadFile(const char* fileName, char*& data)
@@ -39,10 +39,10 @@ TEST_CASE("JSONTest", "[JSON]")
 		if (LoadFile("tests/Data/big.json", data))
 		{
 			char *endptr;
-			JsonValue value;
-			JsonAllocator allocator;
+			gason::JsonValue value;
+			gason::JsonAllocator allocator;
 			int result = jsonParse(data, &endptr, &value, allocator);
-			passed = (result == JSON_OK);
+			passed = (result == gason::JSON_PARSE_OK);
 			free(data);
 			data = nullptr;
 		}

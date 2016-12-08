@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\gason\src\gason.cpp" />
+    <ClCompile Include="..\gason--\src\gason.cpp" />
     <ClCompile Include="common\Log.cpp" />
     <ClCompile Include="common\Log_Assert.cpp" />
     <ClCompile Include="rpc\Command.cpp" />
@@ -35,6 +35,7 @@
     <ClCompile Include="sockets\SocketRecThread.cpp" />
     <ClCompile Include="sockets\SocketSendThread.cpp" />
     <ClCompile Include="sockets\SocketServerBase.cpp" />
+    <ClCompile Include="stratum\Stratum.cpp" />
     <ClCompile Include="thread\Barrier.cpp" />
     <ClCompile Include="thread\Barrier_POSIX.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -85,7 +86,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\gason\src\gason.h" />
+    <ClInclude Include="..\gason--\src\gason.hpp" />
+    <ClInclude Include="..\gason--\src\jsonbuilder.hpp" />
     <ClInclude Include="common\Log.h" />
     <ClInclude Include="common\Log_Assert.h" />
     <ClInclude Include="common\Statics.h" />
@@ -102,6 +104,7 @@
     <ClInclude Include="sockets\SocketRecThread.h" />
     <ClInclude Include="sockets\SocketSendThread.h" />
     <ClInclude Include="sockets\SocketServerBase.h" />
+    <ClInclude Include="stratum\Stratum.h" />
     <ClInclude Include="thread\Barrier.h" />
     <ClInclude Include="thread\Condition.h" />
     <ClInclude Include="thread\CriticalSection.h" />
@@ -111,6 +114,11 @@
     <ClInclude Include="thread\Thread.h" />
     <ClInclude Include="thread\ThreadBase.h" />
     <ClInclude Include="thread\ThreadPool.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="stratum\Ethereum_specification_R1.txt" />
+    <Text Include="stratum\NiceHash_Sample.txt" />
+    <Text Include="stratum\Stratum protocol changes for ZCash.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{C6839DB6-EF79-4716-9587-0713F04C50CE}</ProjectGuid>
