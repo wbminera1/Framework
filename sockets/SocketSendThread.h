@@ -21,10 +21,13 @@ namespace sockets
 
 		void Send(const std::vector<char>& data);
 
+		virtual bool Create();
+
 		virtual void Stop();
 
 	protected:
 		
+
 		virtual void Process();
 
 		sockets::Socket* m_Socket;

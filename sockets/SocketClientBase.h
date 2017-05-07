@@ -20,6 +20,7 @@ public:
 protected:
 
 	virtual void OnStart();
+	virtual bool OnIdle();
 	virtual void Process();
 
 	sockets::Socket m_Socket;

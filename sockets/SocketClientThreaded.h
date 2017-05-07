@@ -23,6 +23,8 @@ protected:
 
 	virtual void OnStart()
 	{
+		SocketClientBase::OnStart();
+
 		Listen(&m_RecThread);
 		Listen(&m_SendThread);
 		m_RecThread.SetOnReceived(ThreadOnReceived, this);
@@ -76,8 +78,10 @@ protected:
 	virtual void OnReceivedEvent(Thread* thread)
 	{
 		Log(LOG_DEBUG, __FUNCTION__ " started %s", thread->GetName().c_str());
+		/*
 		Log(LOG_DEBUG, __FUNCTION__ " data size %d", m_RecThread.GetData().size());
 		m_SendThread.Send(m_RecThread.GetData());
+		*/
 		Log(LOG_DEBUG, __FUNCTION__ " stopped %s", thread->GetName().c_str());
 	}
 

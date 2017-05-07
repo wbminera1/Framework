@@ -29,8 +29,15 @@ void SocketClientBase::Process()
 {
 	while (!m_Stop)
 	{
-		thread::Thread::Sleep(100);
+		if (OnIdle()) {
+			thread::Thread::Sleep(100);
+		}
 	}
+}
+
+bool SocketClientBase::OnIdle()
+{
+	return true;
 }
 
 
